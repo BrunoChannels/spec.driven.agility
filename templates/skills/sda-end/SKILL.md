@@ -32,9 +32,11 @@ ni código para "hacer pasar": si algo falla, lo reportas y te detienes.
 modificado/eliminado sin aprobación explícita, detente. Comprueba que el test nuevo no se haya
 retocado después del verde.
 
-**b) Lógica adyacente.** Identifica módulos tocados y sus consumidores; revisa que los flujos
-vecinos sigan coherentes. Corre la suite completa y el linter (revisa `package.json`/`AGENTS.md`), y
-si se tocó arranque/rutas/bundle, también el build. Muestra evidencia.
+**b) Lógica adyacente y e2e.** Identifica módulos tocados y sus consumidores; revisa que los flujos
+vecinos sigan coherentes. **Corre el comando e2e del `## Framework e2e` del `Plan.md`**: los
+escenarios de la HU deben pasar en verde. Si el `Plan.md` no tiene framework e2e, detente y avísame
+antes de cerrar. Además, corre la suite completa y el linter (revisa `package.json`/`AGENTS.md`); si
+se tocó arranque/rutas/bundle, también el build. Muestra evidencia.
 
 **c) Sin bugs sueltos.** Revisa el diff: condiciones de borde, estados de carga, textos sin
 traducir, errores silenciados, suscripciones sin limpiar. Anota hallazgos; no arregles por tu cuenta
@@ -44,7 +46,7 @@ aquí.
 
 ## 3. Decide
 
-- **Todo en verde** → paso 4.
+- **Todo en verde** (incluidos los e2e de la HU con el comando del `Plan.md`) → paso 4.
 - **Regla rota** → no marques ni sincronices. Informe breve: regla, evidencia (`archivo:línea`,
   comando), impacto, opciones; pregunta cómo seguir.
 
