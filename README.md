@@ -23,7 +23,7 @@ Esto crea:
 ```
 .opencode/commands/sda-*.md     ← 5 comandos: /sda-sprint, /sda-explore, /sda-spec, /sda-build, /sda-end
 .opencode/skills/sda-*/SKILL.md ← 5 skills con las reglas y plantillas
-Backlog/                        ← backlog de sprints (se llena con /sda-sprint)
+backlog/                        ← backlog de sprints (se llena con /sda-sprint)
 specs/                          ← historia de specs viva (la mantiene /sda-end)
 ```
 
@@ -35,7 +35,10 @@ Después ejecuta `/sda-sprint` en opencode: ahí se define (o se hereda de un sp
 sda update
 ```
 
-Re-sincroniza comandos y skills. No toca `Backlog/` ni `specs/`.
+Re-sincroniza comandos y skills. No toca `backlog/` ni `specs/`.
+
+> Si vienes de la 0.5.x o anterior, renombra tu carpeta `Backlog/` a `backlog/` una vez:
+> `git mv Backlog backlog` (en Windows/macOS, si git no lo detecta, usa `git mv Backlog tmp && git mv tmp backlog`).
 
 ## Comandos
 

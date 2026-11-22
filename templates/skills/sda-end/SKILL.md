@@ -12,11 +12,11 @@ ni código para "hacer pasar": si algo falla, lo reportas y te detienes.
 
 ## 0. Identifica la HU
 
-- Localiza `Backlog/<sprint>/HU_NN/` y su `Plan.md`. Lee `spec.md`, `design.md`, `tasks.md` y el
+- Localiza `backlog/<sprint>/HU_NN/` y su `Plan.md`. Lee `spec.md`, `design.md`, `tasks.md` y el
   `Plan.md` completos.
 - Si el contexto no alcanza, deduce la candidata desde el diff de git y **confírmala conmigo antes
   de tocar nada**.
-- Si el plan vive en `Backlog/archive/<sprint>/`, ya estaba completo: no lo desarchives; repórtalo y
+- Si el plan vive en `backlog/archive/<sprint>/`, ya estaba completo: no lo desarchives; repórtalo y
   confirma.
 
 ## 1. Recorre lo implementado
@@ -108,17 +108,17 @@ archivos/funciones/tests. No reescribas el resto de la HU.
 Solo cuando **acabas de marcar la última HU pendiente** del Backlog:
 
 - Detente y pregunta (herramienta de preguntas): ¿archivo el sprint en
-  `Backlog/archive/<sprint>/`? Opciones: archivar o dejarlo en `Backlog/<sprint>/`. Nunca archives
+  `backlog/archive/<sprint>/`? Opciones: archivar o dejarlo en `backlog/<sprint>/`. Nunca archives
   sin confirmación.
 - **No** → no muevas nada; déjalo dicho.
 - **Sí**:
-  - Crea `Backlog/archive/` si no existe.
-  - Mueve la carpeta completa `Backlog/<sprint>/` → `Backlog/archive/<sprint>/` (movimiento del
+  - Crea `backlog/archive/` si no existe.
+  - Mueve la carpeta completa `backlog/<sprint>/` → `backlog/archive/<sprint>/` (movimiento del
     sistema, no `git mv`; no stagees ni commitees).
   - Si el destino existe, detente y pregunta (no sobrescribas ni fusiones).
   - Verifica rutas y deja constancia.
 - Si queda alguna HU sin marcar, **no preguntes ni archives**: el plan sigue en
-  `Backlog/<sprint>/`.
+  `backlog/<sprint>/`.
 
 ## 7. Cierra
 
@@ -126,7 +126,7 @@ Mensaje breve y cálido:
 
 - ✅ `HU_NN` validada, spec sincronizada en `specs/<capability>/spec.md` y HU marcada.
 - Dos o tres datos: qué quedó funcionando, verificaciones en verde, qué falta a mano.
-- Si archivaste, di la ruta nueva. Si no, que el plan sigue en `Backlog/<sprint>/`.
+- Si archivaste, di la ruta nueva. Si no, que el plan sigue en `backlog/<sprint>/`.
 - Sugerencia de commit, sin commitear.
 
 No cierres con pregunta (la única permitida es la del paso 6).

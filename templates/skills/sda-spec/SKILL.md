@@ -11,7 +11,7 @@ escenarios e2e de `spec.md` son el **contrato de test** que `/sda-build` está o
 
 ## Entrada
 
-- La HU del `Backlog/<sprint>/Plan.md` (ruta o bloque pegado).
+- La HU del `backlog/<sprint>/Plan.md` (ruta o bloque pegado).
 - El enfoque acordado en `/sda-explore`.
 - El `## Framework e2e` del `Plan.md` y la spec viva `specs/<capability>/spec.md` de la capability
   que toca.
@@ -48,7 +48,7 @@ escenarios e2e de `spec.md` son el **contrato de test** que `/sda-build` está o
 
 ## Ubicación
 
-`Backlog/<sprint>/HU_NN/` con `spec.md`, `design.md` y `tasks.md`. Numeración según el `## Backlog`
+`backlog/<sprint>/HU_NN/` con `spec.md`, `design.md` y `tasks.md`. Numeración según el `## Backlog`
 del plan: `HU1` → `HU_01`. Si no se puede saber, usa el siguiente número libre. Si la carpeta ya
 existe, pregunta antes de sobrescribir.
 
@@ -57,7 +57,7 @@ existe, pregunta antes de sobrescribir.
 ```markdown
 # HU_NN — <título corto>
 
-**Plan:** `Backlog/<sprint>/Plan.md` · HU_NN
+**Plan:** `backlog/<sprint>/Plan.md` · HU_NN
 **Estado:** 🔲 Planificado
 **Capability:** <ruta de specs, ej. `exports`>
 

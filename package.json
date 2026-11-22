@@ -1,6 +1,6 @@
 {
   "name": "spec-driven-agility",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Metodología Spec-Driven Agility (SDA): backlog ágil, artefactos por HU y test e2e obligatorio. Instala los comandos /sda-* en opencode.",
   "type": "module",
   "bin": {

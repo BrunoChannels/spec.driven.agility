@@ -11,7 +11,7 @@ Pasos grandes: **una HU = sus escenarios e2e en verde = una entrega**. No se par
 
 ## 1. Revisión
 
-- Lee los artefactos de la HU: `Backlog/<sprint>/HU_NN/{spec,design,tasks}.md`. Son el insumo
+- Lee los artefactos de la HU: `backlog/<sprint>/HU_NN/{spec,design,tasks}.md`. Son el insumo
   esperado; si no están, pídemelos.
 - Lee el `## Framework e2e` del `Plan.md`: framework, comando y directorio de tests. Si no está,
   avísame y lo decidimos antes de escribir tests.

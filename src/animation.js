@@ -11,35 +11,49 @@ const H = 15;
 function buildLevels() {
   const filled = Array.from({ length: H }, () => Array(W).fill(false));
 
-  const ell = (cx, cy, rx, ry, on) => {
+  // Elipse con rotación para hojas naturales y no simétricas.
+  const ell = (cx, cy, rx, ry, on, angle = 0) => {
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
     for (let y = 0; y < H; y += 1) {
       for (let x = 0; x < W; x += 1) {
-        const dx = (x - cx) / rx;
-        const dy = (y - cy) / ry;
-        if (dx * dx + dy * dy <= 1) filled[y][x] = on;
+        const dx = x - cx;
+        const dy = y - cy;
+        const u = dx * cos + dy * sin;
+        const v = -dx * sin + dy * cos;
+        if ((u / rx) ** 2 + (v / ry) ** 2 <= 1) filled[y][x] = on;
       }
     }
   };
 
-  // Dos hojas.
-  ell(7.5, 6, 7.5, 5.5, true);
-  ell(19.5, 6, 7.5, 5.5, true);
-
-  // V central entre las hojas.
-  for (let y = 2; y <= 9; y += 1) {
-    const half = Math.max(0, (9 - y) * 0.7);
-    for (let x = Math.floor(13.5 - half); x <= Math.ceil(13.5 + half); x += 1) {
-      if (filled[y] && filled[y][x] !== undefined) filled[y][x] = false;
+  const dot = (cx, cy, r) => {
+    for (let y = Math.floor(cy - r); y <= Math.ceil(cy + r); y += 1) {
+      for (let x = Math.floor(cx - r); x <= Math.ceil(cx + r); x += 1) {
+        if (x < 0 || x >= W || y < 0 || y >= H) continue;
+        if ((x - cx) ** 2 + (y - cy) ** 2 <= r * r) filled[y][x] = true;
+      }
     }
-  }
+  };
 
-  // Tallo.
-  for (let y = 9; y <= 12; y += 1) {
-    for (let x = 13; x <= 14; x += 1) filled[y][x] = true;
-  }
+  const stroke = (x0, y0, x1, y1, r) => {
+    const steps = 60;
+    for (let i = 0; i <= steps; i += 1) {
+      const t = i / steps;
+      dot(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, r);
+    }
+  };
+
+  // Hojas distintas: la derecha es más alta, pequeña e inclinada hacia arriba;
+  // la izquierda queda más abajo, más grande y caída hacia fuera.
+  ell(20.4, 4, 5.9, 3.4, true, 0.2);
+  ell(5.9, 8.4, 6.4, 3.7, true, -0.22);
+
+  // Tallo largo, ligeramente inclinado, y peciolo de la hoja izquierda.
+  stroke(13.4, 12.2, 14.6, 4.8, 1);
+  stroke(11.7, 9.4, 13.9, 9.4, 0.55);
 
   // Montículo.
-  ell(13.5, 17, 12, 5, true);
+  ell(13.5, 17, 12.2, 4.8, true);
 
   const isFilled = (x, y) => x >= 0 && x < W && y >= 0 && y < H && filled[y][x];
   const isEdge = (x, y) =>
@@ -67,7 +81,7 @@ const RESET = '\x1b[0m';
 const HIDE = '\x1b[?25l';
 const SHOW = '\x1b[?25h';
 const CLEAR = '\x1b[2K';
-const BLOCK_HEIGHT = H + 1; // sprite + línea del prompt
+const BLOCK_HEIGHT = H; // sprite y panel comparten altura
 
 // Verdes oscuros: cuerpo siempre visible (40/34), borde más oscuro (28/22).
 const COLOR = {
@@ -76,15 +90,39 @@ const COLOR = {
   '▓': '\x1b[38;5;34m',
   '█': '\x1b[38;5;40m',
 };
-const PROMPT_COLOR = '\x1b[38;5;28m';
-const PROMPT = '   Press ENTER to continue...  ';
 
-// Panel a la derecha de la planta.
+// Paleta del panel, alineada a la derecha de la planta.
+const TITLE_COLOR = '\x1b[1m\x1b[97m';
+const BODY_COLOR = '\x1b[38;5;252m';
+const MUTED_COLOR = '\x1b[38;5;244m';
+const CMD_COLOR = '\x1b[38;5;40m';
+const PROMPT_COLOR = '\x1b[3m\x1b[97m';
+
 const PANEL_GAP = '    ';
+const COMMAND_COLUMN = 15;
+
+function commandRow(command, description) {
+  return [
+    { text: command, color: CMD_COLOR },
+    { text: ' '.repeat(Math.max(2, COMMAND_COLUMN - command.length)), color: '' },
+    { text: description, color: MUTED_COLOR },
+  ];
+}
+
+// Cada fila del panel corresponde a una fila de la planta.
 const PANEL = {
-  6: { text: 'Spec Driven Agility', color: '\x1b[1m\x1b[38;5;40m' },
-  8: { text: 'Injecting commands and skills', color: '\x1b[38;5;34m' },
-  9: { text: 'into the repository root.', color: '\x1b[38;5;34m' },
+  0: [{ text: 'Welcome to Spec-Driven Agility', color: TITLE_COLOR }],
+  1: [{ text: 'A lightweight spec-driven framework', color: MUTED_COLOR }],
+  3: [{ text: 'This setup will configure:', color: BODY_COLOR }],
+  4: [{ text: '  • Agent Skills for AI tools', color: MUTED_COLOR }],
+  5: [{ text: '  • Workflow commands for /sda-*', color: MUTED_COLOR }],
+  7: [{ text: 'Quick start after setup:', color: BODY_COLOR }],
+  8: commandRow('/sda-sprint', 'Plan the sprint backlog'),
+  9: commandRow('/sda-explore', 'Explore the approach'),
+  10: commandRow('/sda-spec', 'Write spec, design & tasks'),
+  11: commandRow('/sda-build', 'Implement with e2e TDD'),
+  12: commandRow('/sda-end', 'Validate and sync specs'),
+  14: [{ text: 'Press Enter to continue...', color: PROMPT_COLOR }],
 };
 
 function sleep(ms) {
@@ -115,7 +153,10 @@ function lineFor(y, phase) {
 
   const panel = PANEL[y];
   if (panel) {
-    out += `${PANEL_GAP}${panel.color}${panel.text}${RESET}`;
+    out += PANEL_GAP;
+    for (const part of panel) {
+      out += part.color ? `${part.color}${part.text}${RESET}` : part.text;
+    }
   }
 
   return out;
@@ -125,7 +166,6 @@ function drawFrame(stream, phase) {
   for (let y = 0; y < H; y += 1) {
     stream.write(`\r${CLEAR}${lineFor(y, phase)}\n`);
   }
-  stream.write(`\r${CLEAR}${PROMPT_COLOR}${PROMPT}${RESET}\n`);
 }
 
 function erase(stream) {

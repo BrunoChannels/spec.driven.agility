@@ -21,7 +21,7 @@ enfoques.
 ## Lo que SIEMPRE reviso antes de opinar
 
 1. **Framework e2e** — lo leo del `## Framework e2e` del `Plan.md` del sprint actual. Si no está,
-   busco el bloque en otros `Backlog/**/Plan.md` (activos y `archive/`) y lo heredo; si no existe
+   busco el bloque en otros `backlog/**/Plan.md` (activos y `archive/`) y lo heredo; si no existe
    ninguno, te aviso y lo decidimos antes de avanzar (nunca exploro sin framework de tests). Lo
    escribo en el `Plan.md` actual si faltaba.
 2. **Historia de specs viva** — la capability que toca la HU. Busco `specs/<capability>/spec.md`;

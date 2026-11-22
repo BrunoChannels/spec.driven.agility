@@ -1,6 +1,6 @@
 ---
 name: sda-sprint
-description: Crea o actualiza el Backlog de un sprint como historias de usuario verticales. Define o hereda el framework e2e (obligatorio) y lo guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
+description: Crea o actualiza el backlog de un sprint como historias de usuario verticales. Define o hereda el framework e2e (obligatorio) y lo guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
 disable-model-invocation: true
 ---
 
@@ -20,7 +20,7 @@ Antes de armar el backlog, garantiza que el framework de tests e2e esté definid
 contrato de cada HU y no se trabaja sin él.
 
 1. **Busca una decisión previa** con un `grep` acotado de `## Framework e2e` en los
-   `Backlog/**/Plan.md` (sprints activos y `Backlog/archive/`). Lee solo ese bloque; no leas los
+   `backlog/**/Plan.md` (sprints activos y `backlog/archive/`). Lee solo ese bloque; no leas los
    planes enteros.
 2. **Si existe**, hereda la más reciente: escribe ese mismo bloque en el nuevo `Plan.md`. No
    preguntes nada.
@@ -86,8 +86,8 @@ Agrega `Requiere: #N` solo cuando una historia no tiene sentido sin otra.
 
 Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
-- Carpeta: `Backlog/<nombre-descriptivo>/Plan.md` (kebab-case en español, 2–4 palabras, sin acentos).
-- Si `Backlog/` no existe, créala con esa grafía.
+- Carpeta: `backlog/<nombre-descriptivo>/Plan.md` (kebab-case en español, 2–4 palabras, sin acentos).
+- Si `backlog/` no existe, créala con esa grafía.
 - Si la carpeta ya existe, pregunta si actualizo su `Plan.md` o uso otro nombre. Nunca sobrescribas
   sin preguntar.
 - Formato de `Plan.md`:

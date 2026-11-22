@@ -52,7 +52,7 @@ function installSkills(targetDir) {
 
 function scaffoldDirs(targetDir) {
   const created = [];
-  for (const name of ['Backlog', 'specs']) {
+  for (const name of ['backlog', 'specs']) {
     const dir = path.join(targetDir, name);
     if (fs.existsSync(dir)) continue;
     ensureDir(dir);
@@ -60,6 +60,12 @@ function scaffoldDirs(targetDir) {
     created.push(name);
   }
   return created;
+}
+
+function hasLegacyBacklogDir(targetDir) {
+  if (!fs.existsSync(targetDir)) return false;
+  const entries = fs.readdirSync(targetDir);
+  return entries.includes('Backlog') && !entries.includes('backlog');
 }
 
 function printHeader(targetDir) {
@@ -75,14 +81,20 @@ export function runInit(targetDir) {
   const commands = installCommands(targetDir);
   const skills = installSkills(targetDir);
   const dirs = scaffoldDirs(targetDir);
+  const legacyBacklog = hasLegacyBacklogDir(targetDir);
 
   console.log(`  ✔ ${commands} comandos en .opencode/commands/`);
   console.log(`  ✔ ${skills} skills en .opencode/skills/`);
   console.log(
     dirs.length
       ? `  ✔ carpetas: ${dirs.join(', ')}`
-      : '  • Backlog/ y specs/ ya existían',
+      : '  • backlog/ y specs/ ya existían',
   );
+  if (legacyBacklog) {
+    console.log(
+      '  ! Detecté Backlog/ de una versión anterior: renómbrala a backlog/ para que los skills la encuentren.',
+    );
+  }
   console.log('');
   console.log('  Siguiente paso: en opencode, ejecuta /sda-sprint.');
   console.log('  (El framework e2e lo defines o heredas ahí.)');
@@ -97,6 +109,6 @@ export function runUpdate(targetDir) {
 
   console.log(`  ✔ ${commands} comandos re-sincronizados`);
   console.log(`  ✔ ${skills} skills re-sincronizadas`);
-  console.log('  • Backlog/ y specs/ no se tocaron');
+  console.log('  • backlog/ y specs/ no se tocaron');
   console.log('');
 }
