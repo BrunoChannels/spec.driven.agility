@@ -77,7 +77,7 @@ const COLOR = {
   '█': '\x1b[38;5;40m',
 };
 const PROMPT_COLOR = '\x1b[38;5;28m';
-const PROMPT = '   Presiona ENTER para continuar...  ';
+const PROMPT = '   Press ENTER to continue...  ';
 
 // Panel a la derecha de la planta.
 const PANEL_GAP = '    ';
