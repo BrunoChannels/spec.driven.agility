@@ -27,8 +27,13 @@
     "cli"
   ],
   "license": "MIT",
+  "author": "Bruno Esteban Coloma",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TU-USUARIO/spec-driven-agility"
+    "url": "https://github.com/BrunoChannels/spec.driven.agility"
+  },
+  "homepage": "https://github.com/BrunoChannels/spec.driven.agility#readme",
+  "bugs": {
+    "url": "https://github.com/BrunoChannels/spec.driven.agility/issues"
   }
 }

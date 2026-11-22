@@ -72,7 +72,7 @@ help            Muestra la ayuda.
 El paquete no tiene dependencias: solo Node.js 18+.
 
 ```bash
-git clone https://github.com/TU-USUARIO/spec-driven-agility.git
+git clone https://github.com/BrunoChannels/spec.driven.agility.git
 cd spec-driven-agility
 npm link          # deja `sda` apuntando a este repo
 sda init /tmp/prueba
