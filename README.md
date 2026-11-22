@@ -64,7 +64,9 @@ help            Muestra la ayuda.
 
 `sda init` muestra una **planta pixel-art en verdes oscuros** hecha con bloques de mosaico
 (`█▓▒░`); el patrón de sombra se desplaza suavemente en bucle, **sin apagarse**, hasta que presionas
-ENTER. En CI o scripts se omite sola; también puedes forzarlo con `sda init --no-animation`.
+ENTER. La intro es responsiva: si la terminal no alcanza el ancho para la planta, muestra solo el
+texto de bienvenida y los comandos; si es demasiado pequeña, se omite y la instalación continúa
+directamente. En CI o scripts se omite sola; también puedes forzarlo con `sda init --no-animation`.
 
 ## Filosofía
 

@@ -81,7 +81,9 @@ const RESET = '\x1b[0m';
 const HIDE = '\x1b[?25l';
 const SHOW = '\x1b[?25h';
 const CLEAR = '\x1b[2K';
-const BLOCK_HEIGHT = H; // sprite y panel comparten altura
+const BLOCK_HEIGHT = H; // alto del bloque en modo frames (pruebas)
+const ENTER_ALT = '\x1b[?1049h';
+const LEAVE_ALT = '\x1b[?1049l';
 
 // Verdes oscuros: cuerpo siempre visible (40/34), borde más oscuro (28/22).
 const COLOR = {
@@ -125,6 +127,28 @@ const PANEL = {
   14: [{ text: 'Press Enter to continue...', color: PROMPT_COLOR }],
 };
 
+// Layouts responsivos: full (planta + panel), compact (solo texto) o skip.
+const PANEL_WIDTH = Math.max(
+  ...Object.values(PANEL).map((row) => row.reduce((width, part) => width + part.text.length, 0)),
+);
+const COMPACT_ROWS = Object.keys(PANEL)
+  .map(Number)
+  .sort((a, b) => a - b);
+
+const FULL_MIN_COLUMNS = W + PANEL_GAP.length + PANEL_WIDTH + 1;
+const FULL_MIN_ROWS = H;
+const COMPACT_MIN_COLUMNS = PANEL_WIDTH + 1;
+const COMPACT_MIN_ROWS = COMPACT_ROWS.length + 1;
+
+function detectLayout(stream) {
+  const columns = stream && stream.columns;
+  const rows = stream && stream.rows;
+  if (!columns || !rows) return 'skip';
+  if (columns >= FULL_MIN_COLUMNS && rows >= FULL_MIN_ROWS) return 'full';
+  if (columns >= COMPACT_MIN_COLUMNS && rows >= COMPACT_MIN_ROWS) return 'compact';
+  return 'skip';
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -134,6 +158,16 @@ function canAnimate(stream) {
   if (process.env.CI) return false;
   if (process.env.TERM === 'dumb') return false;
   return true;
+}
+
+function formatPanelRow(y) {
+  const row = PANEL[y];
+  if (!row) return '';
+  let out = '';
+  for (const part of row) {
+    out += part.color ? `${part.color}${part.text}${RESET}` : part.text;
+  }
+  return out;
 }
 
 function lineFor(y, phase) {
@@ -151,18 +185,22 @@ function lineFor(y, phase) {
     out += COLOR[ch] + ch + RESET;
   }
 
-  const panel = PANEL[y];
-  if (panel) {
-    out += PANEL_GAP;
-    for (const part of panel) {
-      out += part.color ? `${part.color}${part.text}${RESET}` : part.text;
-    }
+  if (PANEL[y]) {
+    out += `${PANEL_GAP}${formatPanelRow(y)}`;
   }
 
   return out;
 }
 
-function drawFrame(stream, phase) {
+// Modo full: posicionamiento absoluto dentro del buffer alternativo.
+function drawFrameAbsolute(stream, phase) {
+  for (let y = 0; y < H; y += 1) {
+    stream.write(`\x1b[${y + 1};1H${CLEAR}${lineFor(y, phase)}`);
+  }
+}
+
+// Modo frames (pruebas): salida secuencial reutilizando el borrado por cursor.
+function drawFrameSequential(stream, phase) {
   for (let y = 0; y < H; y += 1) {
     stream.write(`\r${CLEAR}${lineFor(y, phase)}\n`);
   }
@@ -176,38 +214,49 @@ function erase(stream) {
   stream.write(`\x1b[${BLOCK_HEIGHT}A`);
 }
 
-async function drawLoop(stream, { frames, delay = 110, stopWhen } = {}) {
+async function drawLoop(
+  stream,
+  { frames, delay = 110, stopWhen, render, cursorUp = false, checkLayout = false } = {},
+) {
   let first = true;
   let frame = 0;
 
   while (true) {
     if (stopWhen && stopWhen()) break;
     if (frames !== undefined && frame >= frames) break;
+    if (checkLayout && detectLayout(stream) !== 'full') return { aborted: true };
 
-    if (!first) stream.write(`\x1b[${BLOCK_HEIGHT}A`);
+    if (!first && cursorUp) stream.write(`\x1b[${BLOCK_HEIGHT}A`);
     // La sombra se desplaza cada 3 frames: movimiento lento y continuo.
     const phase = Math.floor(frame / 3) % 2;
-    drawFrame(stream, phase);
+    render(stream, phase);
     first = false;
     frame += 1;
     await sleep(delay);
   }
+
+  return { aborted: false };
 }
 
-function waitForKey(stdin) {
+function restoreTerminalOnAbort(stream, cleanup, fromAltScreen = false) {
+  cleanup();
+  stream.write(`${fromAltScreen ? LEAVE_ALT : ''}${SHOW}`);
+  process.exit(130);
+}
+
+// Modo compact: texto estático y espera de ENTER.
+function waitForKey(stdin, stream) {
   return new Promise((resolve) => {
+    const cleanup = () => {
+      stdin.setRawMode(false);
+      stdin.pause();
+      stdin.removeListener('data', onData);
+    };
+
     const onData = (key) => {
-      if (key === '\u0003') {
-        stdin.setRawMode(false);
-        stdin.pause();
-        stdin.removeListener('data', onData);
-        process.stdout.write(SHOW);
-        process.exit(130);
-      }
+      if (key === '\u0003') restoreTerminalOnAbort(stream, cleanup);
       if (key === '\r' || key === '\n') {
-        stdin.setRawMode(false);
-        stdin.pause();
-        stdin.removeListener('data', onData);
+        cleanup();
         resolve();
       }
     };
@@ -219,9 +268,59 @@ function waitForKey(stdin) {
   });
 }
 
+// Modo full: espera ENTER, Ctrl+C o un resize que ya no permita el layout full.
+function waitForExit(stdin, stream) {
+  return new Promise((resolve) => {
+    let poll;
+
+    const cleanup = () => {
+      clearInterval(poll);
+      stdin.setRawMode(false);
+      stdin.pause();
+      stdin.removeListener('data', onData);
+    };
+
+    const onData = (key) => {
+      if (key === '\u0003') restoreTerminalOnAbort(stream, cleanup, true);
+      if (key === '\r' || key === '\n') {
+        cleanup();
+        resolve('enter');
+      }
+    };
+
+    poll = setInterval(() => {
+      if (detectLayout(stream) !== 'full') {
+        cleanup();
+        resolve('resize');
+      }
+    }, 250);
+
+    stdin.setRawMode(true);
+    stdin.resume();
+    stdin.setEncoding('utf8');
+    stdin.on('data', onData);
+  });
+}
+
+async function runCompact(stream, stdin) {
+  for (const y of COMPACT_ROWS) {
+    stream.write(`${formatPanelRow(y)}\n`);
+  }
+
+  if (stdin.isTTY) {
+    await waitForKey(stdin, stream);
+  } else {
+    await sleep(1500);
+  }
+
+  return true;
+}
+
 /**
  * Intro animada: planta pixel-art con sombra en movimiento hasta ENTER.
- * Se omite en CI, salidas no interactivas o con `--no-animation`.
+ * Responsiva: sin ancho suficiente muestra solo el texto; si es demasiado
+ * pequeña se omite y la instalación continúa directamente. También se omite
+ * en CI, salidas no interactivas o con `--no-animation`.
  */
 export async function playIntro({
   enabled = true,
@@ -231,32 +330,52 @@ export async function playIntro({
 } = {}) {
   if (!enabled || !canAnimate(stream)) return false;
 
-  stream.write(HIDE);
-
-  try {
-    if (frames !== undefined) {
-      await drawLoop(stream, { frames, delay: 80 });
+  if (frames !== undefined) {
+    stream.write(HIDE);
+    try {
+      await drawLoop(stream, {
+        frames,
+        delay: 80,
+        render: drawFrameSequential,
+        cursorUp: true,
+      });
       erase(stream);
       stream.write(SHOW);
       return true;
+    } catch {
+      stream.write(SHOW);
+      return false;
     }
+  }
 
+  const layout = detectLayout(stream);
+  if (layout === 'skip') return false;
+  if (layout === 'compact') return runCompact(stream, stdin);
+
+  stream.write(`${ENTER_ALT}${HIDE}\x1b[2J`);
+
+  try {
     let stop = false;
-    const loop = drawLoop(stream, { stopWhen: () => stop });
+    const loop = drawLoop(stream, {
+      stopWhen: () => stop,
+      render: drawFrameAbsolute,
+      checkLayout: true,
+    });
 
-    if (stdin.isTTY) {
-      await waitForKey(stdin);
-    } else {
-      await sleep(2000);
-    }
+    const outcome = stdin.isTTY
+      ? await waitForExit(stdin, stream)
+      : await sleep(2000).then(() => 'timeout');
 
     stop = true;
-    await loop;
-    erase(stream);
-    stream.write(SHOW);
-    return true;
+    const { aborted } = await loop;
+    stream.write(LEAVE_ALT + SHOW);
+
+    if (!aborted && outcome !== 'resize') return true;
+
+    if (detectLayout(stream) === 'compact') return runCompact(stream, stdin);
+    return false;
   } catch {
-    stream.write(SHOW);
+    stream.write(LEAVE_ALT + SHOW);
     return false;
   }
 }
