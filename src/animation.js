@@ -122,7 +122,7 @@ const PANEL = {
   8: commandRow('/sda-sprint', 'Plan the sprint backlog'),
   9: commandRow('/sda-explore', 'Explore the approach'),
   10: commandRow('/sda-spec', 'Write spec, design & tasks'),
-  11: commandRow('/sda-build', 'Implement with e2e TDD'),
+  11: commandRow('/sda-build', 'Implement with TDD'),
   12: commandRow('/sda-end', 'Validate and sync specs'),
   14: [{ text: 'Press Enter to continue...', color: PROMPT_COLOR }],
 };

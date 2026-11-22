@@ -1,6 +1,6 @@
 ---
 name: sda-end
-description: Cierra la HU recién implementada: valida tests e2e en verde y regresiones, sincroniza la spec de la HU en la spec viva, marca la HU en el checklist del Plan, agrega historial y ofrece archivar el sprint. Nunca commitea.
+description: Cierra la HU recién implementada: valida tests unitarios e integración en verde y regresiones, sincroniza la spec de la HU en la spec viva, marca la HU en el checklist del Plan, agrega historial y ofrece archivar el sprint. Nunca commitea.
 disable-model-invocation: true
 ---
 
@@ -23,20 +23,21 @@ ni código para "hacer pasar": si algo falla, lo reportas y te detienes.
 
 - `git status --short` y el diff completo, incluidos archivos nuevos.
 - Enumera qué se agregó/cambió y mapéalo contra cada escenario de `spec.md`.
-- Distingue: escenarios cubiertos por e2e, validaciones de formato/petición, y cualquier cosa fuera
-  de alcance.
+- Distingue: escenarios cubiertos por tests unitarios, escenarios cubiertos por tests de
+  integración, validaciones de formato/petición, y cualquier cosa fuera de alcance.
 
 ## 2. Valida las reglas
 
-**a) Tests e2e.** El/los archivos e2e nuevos son lo esperado. Si un test preexistente aparece
-modificado/eliminado sin aprobación explícita, detente. Comprueba que el test nuevo no se haya
-retocado después del verde.
+**a) Tests nuevos.** Los archivos de tests unitarios y de integración nuevos son lo esperado. Si un
+test preexistente aparece modificado/eliminado sin aprobación explícita, detente. Comprueba que el
+test nuevo no se haya retocado después del verde.
 
-**b) Lógica adyacente y e2e.** Identifica módulos tocados y sus consumidores; revisa que los flujos
-vecinos sigan coherentes. **Corre el comando e2e del `## Framework e2e` del `Plan.md`**: los
-escenarios de la HU deben pasar en verde. Si el `Plan.md` no tiene framework e2e, detente y avísame
-antes de cerrar. Además, corre la suite completa y el linter (revisa `package.json`/`AGENTS.md`); si
-se tocó arranque/rutas/bundle, también el build. Muestra evidencia.
+**b) Lógica adyacente y tests.** Identifica módulos tocados y sus consumidores; revisa que los flujos
+vecinos sigan coherentes. **Corre los comandos de unitarios e integración del `## Estrategia de
+tests` del `Plan.md`**: los escenarios de la HU deben pasar en verde. Si el `Plan.md` no tiene
+estrategia de tests, detente y avísame antes de cerrar. Además, corre la suite completa y el linter
+(revisa `package.json`/`AGENTS.md`); si se tocó arranque/rutas/bundle, también el build. Muestra
+evidencia.
 
 **c) Sin bugs sueltos.** Revisa el diff: condiciones de borde, estados de carga, textos sin
 traducir, errores silenciados, suscripciones sin limpiar. Anota hallazgos; no arregles por tu cuenta
@@ -46,7 +47,8 @@ aquí.
 
 ## 3. Decide
 
-- **Todo en verde** (incluidos los e2e de la HU con el comando del `Plan.md`) → paso 4.
+- **Todo en verde** (incluidos los tests unitarios y de integración de la HU con los comandos del
+  `Plan.md`) → paso 4.
 - **Regla rota** → no marques ni sincronices. Informe breve: regla, evidencia (`archivo:línea`,
   comando), impacto, opciones; pregunta cómo seguir.
 
@@ -91,7 +93,7 @@ una entrada:
 **Piezas nuevas:**
 - `nombre` — para qué sirve. (`ruta:línea`)
 
-**Pruebas:** archivos, cantidad de escenarios e2e y validaciones, comandos con resultado.
+**Pruebas:** archivos, cantidad de tests unitarios e integración y validaciones, comandos con resultado.
 
 **Decisiones:** las que convenga recordar.
 
@@ -122,7 +124,7 @@ Solo cuando **acabas de marcar la última HU pendiente** del Backlog:
 
 ## 7. Cierra
 
-Mensaje breve y cálido:
+Mensaje breve y claro:
 
 - ✅ `HU_NN` validada, spec sincronizada en `specs/<capability>/spec.md` y HU marcada.
 - Dos o tres datos: qué quedó funcionando, verificaciones en verde, qué falta a mano.

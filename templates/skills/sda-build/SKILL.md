@@ -1,47 +1,52 @@
 ---
 name: sda-build
-description: Implementa una HU de punta a punta con TDD a nivel e2e: escribe el test según la config del proyecto, muestra rojo, implementa el mínimo y deja verde. Nunca commitea.
+description: Implementa una HU de punta a punta con TDD: escribe primero los tests unitarios y de integración, muestra el rojo y espera revisión, implementa el mínimo y deja verde. Nunca commitea.
 disable-model-invocation: true
 ---
 
 # Build (SDA)
 
-Una HU completa por sesión. El test e2e es la especificación; el código es lo mínimo que lo cumple.
-Pasos grandes: **una HU = sus escenarios e2e en verde = una entrega**. No se para en cada caso.
+Una HU completa por sesión. Los tests son la especificación; el código es lo mínimo que los cumple.
+Pasos grandes: **una HU = sus tests en verde = una entrega**. No se para en cada caso.
 
 ## 1. Revisión
 
 - Lee los artefactos de la HU: `backlog/<sprint>/HU_NN/{spec,design,tasks}.md`. Son el insumo
   esperado; si no están, pídemelos.
-- Lee el `## Framework e2e` del `Plan.md`: framework, comando y directorio de tests. Si no está,
-  avísame y lo decidimos antes de escribir tests.
+- Lee el `## Estrategia de tests` del `Plan.md`: runner, comando y directorio de unitarios, y
+  comando y directorio de integración. Si no está, avísame y lo decidimos antes de escribir tests.
 - Contrasta el plan con el código actual. Si algo ya no encaja, dímelo antes de empezar.
 
-## 2. Test e2e primero
+## 2. Tests primero
 
-- Escribe el/los test e2e **a partir de los escenarios de `spec.md`**, en el framework y directorio
-  que diga el `Plan.md`.
-- Cada escenario `DADO/CUANDO/ENTONCES` de la spec es el contrato: el test recorre el flujo completo
-  del usuario, no fragmentos internos.
+- Escribe los tests **a partir de los escenarios de `spec.md`**, en el runner y directorios que diga
+  el `Plan.md`.
+- Cada escenario `DADO/CUANDO/ENTONCES` de la spec es el contrato: el test verifica el
+  comportamiento observable, no detalles internos.
+- Elige el nivel: **unitario** para lógica pura y **de integración** para lo que cruza módulos, CLI,
+  base de datos, API o filesystem.
 - Si la HU tiene sección **Validaciones obligatorias**, agrega los tests de **formato** (contenido
   exportado: celdas, moneda, fechas, encoding) y de **petición** (contrato del sync/API: payload,
   ids, idempotencia).
 - **Corre y muestra rojo** una sola vez, antes de tocar código.
-- Si los tests no se pueden escribir en el framework del proyecto sin agregar dependencias,
+- **Detente para revisión.** Después de mostrar el rojo, espera mi confirmación explícita. No
+  implementes nada hasta que te lo diga, esto es una obligación.
+- Si los tests no se pueden escribir con la estrategia del proyecto sin agregar dependencias,
   **párate y conversa** (no agregues librerías en silencio).
 
 ## 3. Implementación de golpe
 
 1. Implementa toda la HU hasta verde, sin paradas intermedias y sin sumar casos no declarados en la
    spec.
-2. Corre los e2e y muestra verde.
+2. Corre los tests unitarios y los de integración y muestra verde.
+3. En caso de que la implementación requiera tocar tests existentes, **párate y conversa** antes de cambiar nada. Explica qué falla, por qué y qué cambiará.
 
 ## 4. Entrega
 
 Un único mensaje de cierre:
 
 ```
-✅ <HU_NN> verde: <n> escenarios e2e + <n> validaciones de formato/petición.
+✅ <HU_NN> verde: <n> tests unitarios + <n> tests de integración + <n> validaciones de formato/petición.
 Piezas creadas:
 1. `<nombre>` — <para qué sirve>. (`archivo:línea`)
 2. ...
@@ -66,14 +71,14 @@ Decidí: <juicio propio, si hubo>
 ## Reglas de test
 
 - El valor esperado sale del escenario de `spec.md`, **nunca** de la misma lógica que el código.
-- Se prueba el flujo del usuario por la interfaz pública (e2e), no detalles internos.
+- Se prueba el comportamiento por la interfaz pública, no detalles internos.
 - Formato y peticiones se validan siempre que la HU toque exportación o datos.
-- El framework y la ubicación los manda el `## Framework e2e` del `Plan.md`; no improvisar.
+- El runner y la ubicación los manda el `## Estrategia de tests` del `Plan.md`; no improvisar.
 - **Cada test documentado** con una descripción encima que cite el escenario de la spec:
 
 ```js
 // Escenario #01 — la tesorera crea una organización y la ve en la lista.
-test('crear organización la muestra en la lista', async ({ page }) => { ... })
+test('crear organización la muestra en la lista', () => { ... })
 ```
 
 - No modificar tests existentes para que pase código nuevo: si hace falta, párate y conversa.

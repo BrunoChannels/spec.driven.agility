@@ -97,7 +97,7 @@ export function runInit(targetDir) {
   }
   console.log('');
   console.log('  Siguiente paso: en opencode, ejecuta /sda-sprint.');
-  console.log('  (El framework e2e lo defines o heredas ahí.)');
+  console.log('  (La estrategia de tests la defines o heredas ahí.)');
   console.log('');
 }
 

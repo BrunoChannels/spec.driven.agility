@@ -1,6 +1,6 @@
 ---
 name: sda-sprint
-description: Crea o actualiza el backlog de un sprint como historias de usuario verticales. Define o hereda el framework e2e (obligatorio) y lo guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
+description: Crea o actualiza el backlog de un sprint como historias de usuario verticales. Define o hereda la estrategia de tests (unitarios e integración) y la guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
 disable-model-invocation: true
 ---
 
@@ -14,30 +14,32 @@ el desarrollo: este plan es la única fuente de verdad de estado, pero se toca s
 mensaje y en el backlog (la plantilla `Como…` → su equivalente en mi idioma). Si cambio de idioma,
 cambia conmigo.
 
-## 1. Framework e2e (obligatorio, con herencia)
+## 1. Estrategia de tests (obligatoria, con herencia)
 
-Antes de armar el backlog, garantiza que el framework de tests e2e esté definido: el test es el
-contrato de cada HU y no se trabaja sin él.
+Antes de armar el backlog, garantiza que la estrategia de tests esté definida: los tests son el
+contrato de cada HU y no se trabaja sin ellos. Solo se usan tests unitarios y de integración. En caso de estar definida omite este paso; sino, pregúntame y define para plan.md. La estrategia de tests se hereda de sprints previos si existe, o se define en este sprint si no.
 
-1. **Busca una decisión previa** con un `grep` acotado de `## Framework e2e` en los
-   `backlog/**/Plan.md` (sprints activos y `backlog/archive/`). Lee solo ese bloque; no leas los
+1. **Busca una decisión previa** con un `grep` acotado de `## Estrategia de tests` en los
+   `backlog/**/plan.md` (sprints activos y `backlog/archive/`). Lee solo ese bloque; no leas los
    planes enteros.
-2. **Si existe**, hereda la más reciente: escribe ese mismo bloque en el nuevo `Plan.md`. No
+2. **Si existe**, hereda la más reciente: escribe ese mismo bloque en el nuevo `plan.md`. No
    preguntes nada.
 3. **Si no existe**, pregunta una cosa a la vez, con tu sugerencia:
-   1. **Framework e2e** (Playwright, Maestro, Cypress, Detox…).
-   2. **Comando** para correr los tests (ej. `npm run test:e2e`).
-   3. **Directorio** donde viven (ej. `e2e/`).
-   Y escribe el bloque en el nuevo `Plan.md`.
-4. Si ya lo definí en la conversación, úsalo sin repetir la pregunta.
+   1. **Runner de tests** (node:test, Vitest, Jest, pytest…).
+   2. **Comando de unitarios** (ej. `npm run test:unit`).
+   3. **Directorio de unitarios** (ej. `test/unit/`).
+   4. **Comando de integración** (ej. `npm run test:integration`).
+   5. **Directorio de integración** (ej. `test/integration/`).
+   Y escribe el bloque en el nuevo `plan.md`.
+4. Si ya la definí en la conversación, úsala sin repetir la pregunta.
 
-Bloque exacto en el `Plan.md` (debajo de `## Contexto`):
+Bloque exacto en el `plan.md` (debajo de `## Contexto`):
 
 ```markdown
-## Framework e2e
-- **framework**: <nombre>
-- **comando**: <cómo se corren>
-- **directorio**: <ruta>
+## Estrategia de tests
+- **runner**: <nombre>
+- **unitarios**: comando `<...>` — directorio `<...>`
+- **integración**: comando `<...>` — directorio `<...>`
 ```
 
 ## 2. Conversación
@@ -54,9 +56,9 @@ Bloque exacto en el `Plan.md` (debajo de `## Contexto`):
 
 ## 3. Reglas
 
-- **No inventes requisitos.** Solo parte lo que te dije. Si ves un hueco, pregunta; no lo llenes.
+- **No inventes requisitos.** Solo parte lo que te dije. Si ves un hueco, pregunta; no lo llenes por ningún motivo.
 - **Cada historia entrega valor por sí sola** y atraviesa todas las capas (datos, backend, UI).
-  Nunca partas por capa.
+  Nunca partas por capa, esto es obligación.
 - **Sin historias técnicas.** El actor nunca es el desarrollador ni el sistema. "Configurar la base
   de datos" no es historia; esa infraestructura se construye dentro de la primera historia que la
   necesita.
@@ -86,11 +88,11 @@ Agrega `Requiere: #N` solo cuando una historia no tiene sentido sin otra.
 
 Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
-- Carpeta: `backlog/<nombre-descriptivo>/Plan.md` (kebab-case en español, 2–4 palabras, sin acentos).
+- Carpeta: `backlog/<nombre-descriptivo>/plan.md` (kebab-case en español, 2–4 palabras, sin acentos).
 - Si `backlog/` no existe, créala con esa grafía.
-- Si la carpeta ya existe, pregunta si actualizo su `Plan.md` o uso otro nombre. Nunca sobrescribas
+- Si la carpeta ya existe, pregunta si actualizo su `plan.md` o uso otro nombre. Nunca sobrescribas
   sin preguntar.
-- Formato de `Plan.md`:
+- Formato de `plan.md`:
 
 ```markdown
 # <Título en una línea>
@@ -99,11 +101,11 @@ Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
 <2–4 líneas: qué es y para quién; stack; decisiones caras>
 
-## Framework e2e
+## Estrategia de tests
 
-- **framework**: <nombre>
-- **comando**: <cómo se corren>
-- **directorio**: <ruta>
+- **runner**: <nombre>
+- **unitarios**: comando `<...>` — directorio `<...>`
+- **integración**: comando `<...>` — directorio `<...>`
 
 ## Estado de implementación
 
@@ -124,4 +126,4 @@ Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
 - Al actualizar: marca `[x]` las HU terminadas, y permite reordenar, reformular o descartar
   (tachando con `~~...~~` y su motivo). Reescribe solo lo que cambió; nunca inventes HU. Si el
-  `Plan.md` no tiene `## Framework e2e`, aplícalo (hereda o pregunta) antes de seguir.
+  `plan.md` no tiene `## Estrategia de tests`, aplícala (hereda o pregunta) antes de seguir.
