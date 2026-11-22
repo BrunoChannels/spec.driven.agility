@@ -79,6 +79,14 @@ const COLOR = {
 const PROMPT_COLOR = '\x1b[38;5;28m';
 const PROMPT = '   Presiona ENTER para continuar...  ';
 
+// Panel a la derecha de la planta.
+const PANEL_GAP = '    ';
+const PANEL = {
+  6: { text: 'Spec Driven Agility', color: '\x1b[1m\x1b[38;5;40m' },
+  8: { text: 'Injecting commands and skills', color: '\x1b[38;5;34m' },
+  9: { text: 'into the repository root.', color: '\x1b[38;5;34m' },
+};
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -104,6 +112,12 @@ function lineFor(y, phase) {
     else ch = (x + y + phase) % 2 === 0 ? '█' : '▓';
     out += COLOR[ch] + ch + RESET;
   }
+
+  const panel = PANEL[y];
+  if (panel) {
+    out += `${PANEL_GAP}${panel.color}${panel.text}${RESET}`;
+  }
+
   return out;
 }
 
