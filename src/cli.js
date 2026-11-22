@@ -16,8 +16,8 @@ Uso:
   sda <comando> [ruta]
 
 Comandos:
-  init [ruta]     Instala los comandos /sda-*, las skills, sda.config.md y las
-                  carpetas Backlog/ y specs/. Por defecto usa el directorio actual.
+  init [ruta]     Instala los comandos /sda-*, las skills y las carpetas
+                  Backlog/ y specs/. Por defecto usa el directorio actual.
   update [ruta]   Re-sincroniza comandos y skills. No toca config ni datos.
   version         Muestra la versión instalada.
   help            Muestra esta ayuda.

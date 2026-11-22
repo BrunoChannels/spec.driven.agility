@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { COMMANDS_DIR, SKILLS_DIR, CONFIG_TEMPLATE } from './templates.js';
+import { COMMANDS_DIR, SKILLS_DIR } from './templates.js';
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -50,13 +50,6 @@ function installSkills(targetDir) {
   return count;
 }
 
-function scaffoldConfig(targetDir) {
-  const dest = path.join(targetDir, 'sda.config.md');
-  if (fs.existsSync(dest)) return false;
-  copyFile(CONFIG_TEMPLATE, dest);
-  return true;
-}
-
 function scaffoldDirs(targetDir) {
   const created = [];
   for (const name of ['Backlog', 'specs']) {
@@ -81,21 +74,18 @@ export function runInit(targetDir) {
 
   const commands = installCommands(targetDir);
   const skills = installSkills(targetDir);
-  const configCreated = scaffoldConfig(targetDir);
   const dirs = scaffoldDirs(targetDir);
 
   console.log(`  ✔ ${commands} comandos en .opencode/commands/`);
   console.log(`  ✔ ${skills} skills en .opencode/skills/`);
-  console.log(`  ${configCreated ? '✔ sda.config.md creado' : '• sda.config.md ya existía (sin cambios)'}`);
   console.log(
     dirs.length
       ? `  ✔ carpetas: ${dirs.join(', ')}`
       : '  • Backlog/ y specs/ ya existían',
   );
   console.log('');
-  console.log('  Siguiente paso:');
-  console.log('    1. Completa sda.config.md (framework e2e y comando de tests).');
-  console.log('    2. En opencode, ejecuta /sda-sprint.');
+  console.log('  Siguiente paso: en opencode, ejecuta /sda-sprint.');
+  console.log('  (El framework e2e lo defines o heredas ahí.)');
   console.log('');
 }
 
@@ -107,6 +97,6 @@ export function runUpdate(targetDir) {
 
   console.log(`  ✔ ${commands} comandos re-sincronizados`);
   console.log(`  ✔ ${skills} skills re-sincronizadas`);
-  console.log('  • sda.config.md, Backlog/ y specs/ no se tocaron');
+  console.log('  • Backlog/ y specs/ no se tocaron');
   console.log('');
 }

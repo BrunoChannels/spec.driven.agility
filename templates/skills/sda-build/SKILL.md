@@ -13,13 +13,14 @@ Pasos grandes: **una HU = sus escenarios e2e en verde = una entrega**. No se par
 
 - Lee los artefactos de la HU: `Backlog/<sprint>/HU_NN/{spec,design,tasks}.md`. Son el insumo
   esperado; si no están, pídemelos.
-- Lee `sda.config.md`: framework, comando y directorio de tests.
+- Lee el `## Framework e2e` del `Plan.md`: framework, comando y directorio de tests. Si no está,
+  avísame y lo decidimos antes de escribir tests.
 - Contrasta el plan con el código actual. Si algo ya no encaja, dímelo antes de empezar.
 
 ## 2. Test e2e primero
 
 - Escribe el/los test e2e **a partir de los escenarios de `spec.md`**, en el framework y directorio
-  que diga `sda.config.md`.
+  que diga el `Plan.md`.
 - Cada escenario `DADO/CUANDO/ENTONCES` de la spec es el contrato: el test recorre el flujo completo
   del usuario, no fragmentos internos.
 - Si la HU tiene sección **Validaciones obligatorias**, agrega los tests de **formato** (contenido
@@ -67,7 +68,7 @@ Decidí: <juicio propio, si hubo>
 - El valor esperado sale del escenario de `spec.md`, **nunca** de la misma lógica que el código.
 - Se prueba el flujo del usuario por la interfaz pública (e2e), no detalles internos.
 - Formato y peticiones se validan siempre que la HU toque exportación o datos.
-- El framework y la ubicación los manda `sda.config.md`; no improvisar.
+- El framework y la ubicación los manda el `## Framework e2e` del `Plan.md`; no improvisar.
 - **Cada test documentado** con una descripción encima que cite el escenario de la spec:
 
 ```js

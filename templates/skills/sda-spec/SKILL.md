@@ -13,11 +13,12 @@ escenarios e2e de `spec.md` son el **contrato de test** que `/sda-build` está o
 
 - La HU del `Backlog/<sprint>/Plan.md` (ruta o bloque pegado).
 - El enfoque acordado en `/sda-explore`.
-- `sda.config.md` y la spec viva `specs/<capability>/spec.md` de la capability que toca.
+- El `## Framework e2e` del `Plan.md` y la spec viva `specs/<capability>/spec.md` de la capability
+  que toca.
 
 ## Pasos
 
-1. **Leer contexto.** Lee la HU, su `Plan.md`, `sda.config.md`, la spec viva de la capability (si
+1. **Leer contexto.** Lee la HU, su `Plan.md`, su framework e2e, la spec viva de la capability (si
    existe) y el código actual. Si algo no encaja con lo acordado en explore, dímelo antes de
    escribir.
 2. **Determinar la capability.** Deduce `specs/<capability>/` a la que pertenece (por el dominio).

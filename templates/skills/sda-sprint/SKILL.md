@@ -1,6 +1,6 @@
 ---
 name: sda-sprint
-description: Crea o actualiza el Backlog de un sprint como historias de usuario verticales, con bootstrap de config SDA (framework e2e del proyecto). Sin criterios de aceptación ni implementación; eso es /sda-spec.
+description: Crea o actualiza el Backlog de un sprint como historias de usuario verticales. Define o hereda el framework e2e (obligatorio) y lo guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
 disable-model-invocation: true
 ---
 
@@ -14,29 +14,31 @@ el desarrollo: este plan es la única fuente de verdad de estado, pero se toca s
 mensaje y en el backlog (la plantilla `Como…` → su equivalente en mi idioma). Si cambio de idioma,
 cambia conmigo.
 
-## 1. Bootstrap de configuración (solo la primera vez)
+## 1. Framework e2e (obligatorio, con herencia)
 
-- Busca `sda.config.md` en la raíz del repo (sin distinguir mayúsculas).
-- Si NO existe, créala antes de armar el backlog. Pregunta una cosa a la vez, con tu sugerencia:
-  1. **Framework e2e** del proyecto (Playwright, Maestro, Cypress, Detox…). El test es obligatorio,
-     así que hay que decidirlo al empezar a usar la herramienta.
-  2. **Comando** para correr los tests e2e (ej. `npm run test:e2e`).
-  3. **Directorio** donde viven (ej. `e2e/`).
-- Escríbela con este formato:
+Antes de armar el backlog, garantiza que el framework de tests e2e esté definido: el test es el
+contrato de cada HU y no se trabaja sin él.
+
+1. **Busca una decisión previa** con un `grep` acotado de `## Framework e2e` en los
+   `Backlog/**/Plan.md` (sprints activos y `Backlog/archive/`). Lee solo ese bloque; no leas los
+   planes enteros.
+2. **Si existe**, hereda la más reciente: escribe ese mismo bloque en el nuevo `Plan.md`. No
+   preguntes nada.
+3. **Si no existe**, pregunta una cosa a la vez, con tu sugerencia:
+   1. **Framework e2e** (Playwright, Maestro, Cypress, Detox…).
+   2. **Comando** para correr los tests (ej. `npm run test:e2e`).
+   3. **Directorio** donde viven (ej. `e2e/`).
+   Y escribe el bloque en el nuevo `Plan.md`.
+4. Si ya lo definí en la conversación, úsalo sin repetir la pregunta.
+
+Bloque exacto en el `Plan.md` (debajo de `## Contexto`):
 
 ```markdown
-# Configuración SDA
-
-## Tests e2e
+## Framework e2e
 - **framework**: <nombre>
 - **comando**: <cómo se corren>
 - **directorio**: <ruta>
-
-## Specs
-- **directorio**: specs
 ```
-
-- Si ya existe, léela y usa esos valores; no la reescribas salvo que te pida cambiarlos.
 
 ## 2. Conversación
 
@@ -97,6 +99,12 @@ Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
 <2–4 líneas: qué es y para quién; stack; decisiones caras>
 
+## Framework e2e
+
+- **framework**: <nombre>
+- **comando**: <cómo se corren>
+- **directorio**: <ruta>
+
 ## Estado de implementación
 
 **🔲 Planificado.** Ninguna historia implementada.
@@ -110,9 +118,10 @@ Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
 - Checkbox siempre (`- [ ]` o `- [x]`); `_(Requiere: #N)_` solo donde se acordó. Cada checkbox
   separado del siguiente por una línea en blanco.
-- No toques `sda.config.md`, `AGENTS.md` ni ningún otro archivo.
+- No toques `AGENTS.md` ni ningún otro archivo.
 
 ## 6. Actualizar un plan existente
 
 - Al actualizar: marca `[x]` las HU terminadas, y permite reordenar, reformular o descartar
-  (tachando con `~~...~~` y su motivo). Reescribe solo lo que cambió; nunca inventes HU.
+  (tachando con `~~...~~` y su motivo). Reescribe solo lo que cambió; nunca inventes HU. Si el
+  `Plan.md` no tiene `## Framework e2e`, aplícalo (hereda o pregunta) antes de seguir.

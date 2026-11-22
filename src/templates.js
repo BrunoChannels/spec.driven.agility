@@ -15,5 +15,3 @@ export const COMMANDS_DIR = path.join(TEMPLATES_DIR, 'commands');
 /** Plantillas de skills `sda-*`. */
 export const SKILLS_DIR = path.join(TEMPLATES_DIR, 'skills');
 
-/** Plantilla de `sda.config.md`. */
-export const CONFIG_TEMPLATE = path.join(TEMPLATES_DIR, 'sda.config.md');
