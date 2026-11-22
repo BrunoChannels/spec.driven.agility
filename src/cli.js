@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PACKAGE_ROOT } from './templates.js';
 import { runInit, runUpdate } from './installer.js';
+import { playIntro } from './animation.js';
 
 function readVersion() {
   const pkg = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, 'package.json'), 'utf8'));
@@ -18,6 +19,7 @@ Uso:
 Comandos:
   init [ruta]     Instala los comandos /sda-*, las skills y las carpetas
                   Backlog/ y specs/. Por defecto usa el directorio actual.
+                  Usa --no-animation para omitir la intro animada.
   update [ruta]   Re-sincroniza comandos y skills. No toca config ni datos.
   version         Muestra la versión instalada.
   help            Muestra esta ayuda.
@@ -47,6 +49,7 @@ export async function main(argv = process.argv.slice(2)) {
       console.log(readVersion());
       return;
     case 'init':
+      await playIntro({ enabled: !rest.includes('--no-animation') });
       runInit(target);
       return;
     case 'update':

@@ -53,10 +53,14 @@ Re-sincroniza comandos y skills. No toca `Backlog/` ni `specs/`.
 sda <comando> [ruta]
 
 init [ruta]     Instala todo en el proyecto (por defecto, el directorio actual).
+                Muestra la intro animada; usa --no-animation para omitirla.
 update [ruta]   Re-sincroniza comandos y skills.
 version         Muestra la versión.
 help            Muestra la ayuda.
 ```
+
+`sda init` dibuja una pequeña **planta que crece** y espera ENTER antes de instalar. En CI o
+scripts se omite sola; también puedes forzarlo con `sda init --no-animation`.
 
 ## Filosofía
 
