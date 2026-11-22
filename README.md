@@ -59,8 +59,9 @@ version         Muestra la versión.
 help            Muestra la ayuda.
 ```
 
-`sda init` dibuja una pequeña **planta que crece** y espera ENTER antes de instalar. En CI o
-scripts se omite sola; también puedes forzarlo con `sda init --no-animation`.
+`sda init` muestra una **planta de bloques verde fosforescente que parpadea en bucle** hasta que
+presionas ENTER. En CI o scripts se omite sola; también puedes forzarlo con
+`sda init --no-animation`.
 
 ## Filosofía
 
