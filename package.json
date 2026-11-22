@@ -30,7 +30,7 @@
   "author": "Bruno Esteban Coloma",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BrunoChannels/spec.driven.agility"
+    "url": "git+https://github.com/BrunoChannels/spec.driven.agility.git"
   },
   "homepage": "https://github.com/BrunoChannels/spec.driven.agility#readme",
   "bugs": {
