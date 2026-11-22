@@ -59,9 +59,9 @@ version         Muestra la versión.
 help            Muestra la ayuda.
 ```
 
-`sda init` muestra una **planta de bloques verde fosforescente que parpadea en bucle** hasta que
-presionas ENTER. En CI o scripts se omite sola; también puedes forzarlo con
-`sda init --no-animation`.
+`sda init` muestra una **planta pixel-art en verdes oscuros** hecha con bloques de mosaico
+(`█▓▒░`); el patrón de sombra se desplaza suavemente en bucle, **sin apagarse**, hasta que presionas
+ENTER. En CI o scripts se omite sola; también puedes forzarlo con `sda init --no-animation`.
 
 ## Filosofía
 
