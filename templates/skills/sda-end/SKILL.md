@@ -1,6 +1,6 @@
 ---
 name: sda-end
-description: Cierra la HU recién implementada: valida tests unitarios e integración en verde y regresiones, sincroniza la spec de la HU en la spec viva, marca la HU en el checklist del Plan, agrega historial y ofrece archivar el sprint. Nunca commitea.
+description: Cierra la HU recién implementada: valida tests unitarios e integración en verde y regresiones, sincroniza la spec de la HU en la spec viva, marca la HU en el checklist del Plan sin tocar los pasos ni las pruebas manuales, agrega historial y ofrece archivar el sprint. Nunca commitea.
 disable-model-invocation: true
 ---
 
@@ -69,8 +69,13 @@ aquí.
 
 ## 5. Marca el backlog
 
-**En `tasks.md`:** marca `- [x]` todas las tareas, sin juntar checkboxes: cada una conserva su
-párrafo (línea en blanco antes y después).
+**En `tasks.md`:**
+- Marca `- [x]` las tareas de las fases de tests, implementación y validaciones que falten.
+- **No marques ni desmarques** las de `## Pasos manuales` ni `## Revisión manual`: las marca el
+  usuario. Si ya están `[x]`, respetalas.
+- Conserva el espaciado: cada checkbox en su párrafo (línea en blanco antes y después). Si
+  `tasks.md` usa el formato viejo (lista plana), distinguí las manuales por su descripción y no las
+  marques.
 
 **En `Plan.md`:**
 - Marca `- [x]` únicamente la línea de esa HU en el Backlog, sin juntar checkboxes: cada uno
@@ -106,14 +111,15 @@ una entrada:
 
 **Decisiones:** las que convenga recordar.
 
-**Pendiente manual:** lo que falta probar en entorno real.
+**Pendiente manual:** pasos y pruebas de `tasks.md` que el usuario debe ejecutar o marcar.
 
 **Otros:** detalles futuros (omitir si no hay).
 ```
 
 Usa rutas relativas. No incluyas el diff completo; conserva nombres exactos de
-archivos/funciones/tests. No reescribas el resto de la HU. Si existe `revision.md` en la HU,
-incluí en **Otros** los hallazgos que sigan abiertos; no los arregles aquí.
+archivos/funciones/tests. No reescribas el resto de la HU. En **Pendiente manual**, copiá las tareas
+de `## Pasos manuales` y `## Revisión manual` que sigan sin `[x]`; no las marques. Si existe
+`revision.md` en la HU, incluí en **Otros** los hallazgos que sigan abiertos; no los arregles aquí.
 
 ## 6. Pregunta si se archiva el sprint
 
@@ -121,7 +127,8 @@ Solo cuando **acabas de marcar la última HU pendiente** del Backlog:
 
 - Detente y pregunta (herramienta de preguntas): ¿archivo el sprint en
   `backlog/archive/<sprint>/`? Opciones: archivar o dejarlo en `backlog/<sprint>/`. Nunca archives
-  sin confirmación.
+  sin confirmación. Si quedan tareas de `## Pasos manuales` o `## Revisión manual` sin `[x]`,
+  mencionalo en la pregunta ("quedan N pendientes manuales"); no las marques.
 - **No** → no muevas nada; déjalo dicho.
 - **Sí**:
   - Crea `backlog/archive/` si no existe.
@@ -137,7 +144,9 @@ Solo cuando **acabas de marcar la última HU pendiente** del Backlog:
 Mensaje breve y claro:
 
 - ✅ `HU_NN` validada, spec sincronizada en `specs/<capability>/spec.md` y HU marcada.
-- Dos o tres datos: qué quedó funcionando, verificaciones en verde, qué falta a mano.
+- Dos o tres datos: qué quedó funcionando, verificaciones en verde y qué pasos y pruebas manuales
+  quedan sin marcar. Si hay pasos manuales pendientes, decí "validada en código, pendiente de
+  puesta en marcha".
 - Si archivaste, di la ruta nueva. Si no, que el plan sigue en `backlog/<sprint>/`.
 - Sugerencia de commit, sin commitear.
 

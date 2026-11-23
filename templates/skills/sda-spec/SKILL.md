@@ -1,6 +1,6 @@
 ---
 name: sda-spec
-description: Escribe los tres artefactos de una HU (spec con escenarios de test como contrato, design y tasks) a partir del enfoque acordado y ajusta su esfuerzo en el Plan.md. No escribe código; la implementación es /sda-build.
+description: Escribe los tres artefactos de una HU (spec con escenarios de test como contrato, design y tasks por fase con pasos y revisión manual) a partir del enfoque acordado y ajusta su esfuerzo en el Plan.md. No escribe código; la implementación es /sda-build.
 disable-model-invocation: true
 ---
 
@@ -33,8 +33,9 @@ cubren con tests unitarios y de integración.
    se cierra sin tests unitarios o de integración que las cubran.
 5. **Redactar `design.md`** (ver plantilla): cómo entra al código, archivos a tocar, piezas nuevas,
    decisiones, out of scope.
-6. **Redactar `tasks.md`** (ver plantilla): pasos de implementación con los **tests primero**
-   (rojo), una pausa de revisión y el código después (verde).
+6. **Redactar `tasks.md`** (ver plantilla): tareas agrupadas por fase, con los **tests primero**
+   (rojo), una pausa de revisión, el código después (verde), los **pasos manuales** que debe ejecutar
+   el usuario (env vars, SQL, secretos, infra) y la **revisión manual** final.
 7. **Ajustar esfuerzo.** Lee `_(Esfuerzo: N)_` de la HU en el `Plan.md`; si falta, pedímelo. Si el
    diseño revela que la historia es más grande, más chica o no entra en 8, propón el nuevo valor,
    actualiza la línea y recalcula `## Esfuerzo del sprint`. No toques el esfuerzo de otras HU.
@@ -51,8 +52,16 @@ cubren con tests unitarios y de integración.
 - **No escribas código.** Solo los tres artefactos.
 - **Esfuerzo en el plan.** No repitas el esfuerzo en `spec.md`/`design.md`/`tasks.md`: la fuente es
   la línea de la HU en `Plan.md`.
+- **Tasks por fase.** Agrupá con `## N. <fase>` y numeración `N.M`; el orden es tests (rojo),
+  implementación (verde), validaciones obligatorias (si aplica), pasos manuales (si aplica) y
+  revisión manual.
+- **Pasos manuales.** Si el diseño requiere acciones que el agente no puede hacer (variables de
+  entorno en el servidor, SQL en una base real, secretos, DNS, webhooks, permisos, deploy), agregalas
+  con la acción exacta y el entorno. No las ejecutes.
+- **Revisión manual.** La última fase es del usuario: acciones concretas con resultado esperado,
+  derivadas de los escenarios de `spec.md`. No las marques; las marca el usuario.
 - **Ligero.** Nada de sobre-refinar: spec con pocos requisitos claros, design de una página, tasks
-  de 4–7 pasos.
+  chicas agrupadas en 3–5 fases.
 
 ## Ubicación
 
@@ -122,18 +131,42 @@ El sistema DEBE <qué hace, desde el punto de vista del usuario>.
 ```markdown
 # HU_NN — Tareas
 
-- [ ] 1. Escribir los tests unitarios e integración a partir de los escenarios de `spec.md` (rojo).
+## 1. Tests (rojo)
 
-- [ ] 2. Mostrar el rojo y detenerse para revisión.
+- [ ] 1.1 Escribir los tests unitarios e integración a partir de los escenarios de `spec.md` (incluye formato y petición si la HU lo exige).
 
-- [ ] 3. <implementar la pieza mínima que pasa el escenario 1>
+- [ ] 1.2 Mostrar el rojo y detenerse para revisión.
 
-- [ ] 4. <implementar la pieza mínima que pasa el escenario 2>
+## 2. Implementación (verde)
 
-- [ ] 5. Correr unitarios e integración y dejarlos en verde.
+- [ ] 2.1 <implementar la pieza mínima que pasa el escenario 1>
 
-- [ ] 6. (exportación/datos) Validar formato y peticiones.
+- [ ] 2.2 <implementar la pieza mínima que pasa el escenario 2>
+
+- [ ] 2.3 Correr unitarios e integración y dejarlos en verde.
+
+## 3. Validaciones obligatorias
+<!-- solo si toca exportación o datos -->
+
+- [ ] 3.1 Validar formato: <qué se comprueba>.
+
+- [ ] 3.2 Validar peticiones: <qué contrato se comprueba>.
+
+## 4. Pasos manuales
+<!-- solo si el diseño requiere acciones del usuario -->
+
+- [ ] 4.1 Agregar `<VARIABLE>` en el entorno del servidor y reiniciar el servicio.
+
+- [ ] 4.2 Ejecutar `<ruta/migracion.sql>` en la base correspondiente.
+
+## 5. Revisión manual
+
+- [ ] 5.1 <paso concreto en el entorno real> → <resultado esperado>.
+
+- [ ] 5.2 <otro flujo visible> → <resultado esperado>.
 ```
 
 Cada checkbox va en su propio párrafo: una línea en blanco antes y otra después. Nunca pegues dos
-checkboxes seguidos.
+checkboxes seguidos. Las tareas de `## Pasos manuales` y `## Revisión manual` las marca el usuario:
+escribí acciones concretas, con el entorno o el resultado esperado. La revisión manual lleva entre 2
+y 5 ítems. Si una fase no aplica, omitila y renumerá las siguientes.

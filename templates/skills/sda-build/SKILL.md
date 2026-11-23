@@ -36,10 +36,16 @@ Pasos grandes: **una HU = sus tests en verde = una entrega**. No se para en cada
 
 ## 3. Implementación de golpe
 
-1. Implementa toda la HU hasta verde, sin paradas intermedias y sin sumar casos no declarados en la
+1. Al recibir mi confirmación, marcá `[x]` las tareas de la fase de tests en `tasks.md` y después
+   implementá toda la HU hasta verde, sin paradas intermedias y sin sumar casos no declarados en la
    spec.
-2. Corre los tests unitarios y los de integración y muestra verde.
+2. Corre los tests unitarios y los de integración y muestra verde. Marcá `[x]` las tareas de
+   implementación y validaciones en `tasks.md`.
 3. En caso de que la implementación requiera tocar tests existentes, **párate y conversa** antes de cambiar nada. Explica qué falla, por qué y qué cambiará.
+4. Si la implementación necesita una acción manual tuya (variable de entorno en el servidor, SQL en
+   una base real, secreto, DNS, webhook, deploy), agregala a `## Pasos manuales` en `tasks.md` con la
+   acción exacta (si la sección no existe, creala antes de `## Revisión manual`). No la ejecutes;
+   avisame.
 
 ## 4. Barrido de huecos (opcional)
 
@@ -76,7 +82,7 @@ Un único mensaje de cierre:
 Piezas creadas:
 1. `<nombre>` — <para qué sirve>. (`archivo:línea`)
 2. ...
-Manual: <qué hay que probar a mano, si queda algo>
+Manual: <pasos de `## Pasos manuales` y pruebas de `## Revisión manual` que quedan para vos>
 Decidí: <juicio propio, si hubo>
 🔍 Barrido: <n> hallazgos — <guardado en `revision.md` | solo en chat>
 1. [alta] <tipo> — `archivo:línea` — <impacto> → <sugerencia>
@@ -85,6 +91,9 @@ Decidí: <juicio propio, si hubo>
 
 - Incluí el bloque `🔍 Barrido` solo si corriste el barrido. Si no hubo hallazgos, escribí
   `🔍 Barrido: sin hallazgos relevantes.`
+- No marques las tareas de `## Pasos manuales` ni de `## Revisión manual`: las marca el usuario.
+  Marca solo las fases de tests, implementación y validaciones. Si `tasks.md` usa el formato viejo
+  (lista plana), distinguilas por su descripción.
 - Listado ordenado y solo lo nuevo: nombre, para qué sirve, dónde vive.
 - Sugiere mensaje de commit si es buen punto (funcionalidad y refactor en commits distintos).
   **Nunca commitees.**

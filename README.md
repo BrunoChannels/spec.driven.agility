@@ -47,9 +47,9 @@ Re-sincroniza comandos, skills y subagente. No toca `backlog/` ni `specs/`.
 |---|---|
 | `/sda-sprint` | Crea/actualiza el backlog, asigna el esfuerzo por HU y define/hereda la estrategia de tests (guardada en `Plan.md`). |
 | `/sda-explore` | Indaga código + specs vivas + estrategia de tests y acuerda el enfoque de una HU. |
-| `/sda-spec` | Escribe `spec.md` (escenarios de test), `design.md` y `tasks.md` de una HU; ajusta el esfuerzo si el diseño lo cambia. |
+| `/sda-spec` | Escribe `spec.md` (escenarios de test), `design.md` y `tasks.md` por fases con pasos y pruebas manuales; ajusta el esfuerzo si el diseño lo cambia. |
 | `/sda-build` | Implementa con TDD: tests unitarios e integración → rojo → revisión → verde. Al cerrar, ofrece un barrido superficial de huecos con un subagente de solo lectura. |
-| `/sda-end` | Valida, sincroniza specs vivas, marca la HU y archiva el sprint. |
+| `/sda-end` | Valida, sincroniza specs vivas, marca la HU sin tocar los pasos ni las pruebas manuales y archiva el sprint. |
 
 ### Barrido de huecos
 
@@ -76,6 +76,19 @@ cosa. El plan mantiene la suma del sprint:
 ```
 
 Las HU descartadas no suman. Si una historia no entra en 8, se parte.
+
+### Tareas, pasos y revisión manual
+
+`tasks.md` agrupa las tareas por fase, al estilo OpenSpec: `## 1. Tests (rojo)`,
+`## 2. Implementación (verde)`, `## 3. Validaciones obligatorias` (si aplica),
+`## 4. Pasos manuales` (si aplica) y `## 5. Revisión manual`. Cada tarea usa numeración `N.M` y su
+propio párrafo.
+
+Las dos últimas fases son del usuario: los **pasos manuales** son acciones que el agente no puede
+hacer (agregar variables de entorno en un servidor, ejecutar SQL en una base real, configurar
+secretos, DNS o webhooks); la **revisión manual** son pruebas concretas de aceptación (acción +
+resultado esperado). Ni `/sda-build` ni `/sda-end` marcan esas tareas: las marca el usuario. Si
+quedan pendientes, `/sda-end` las copia al historial.
 
 ## CLI
 
@@ -104,6 +117,8 @@ directamente. En CI o scripts se omite sola; también puedes forzarlo con `sda i
   módulos; exportación/datos exige validar **formato** y **peticiones**.
 - Cada HU lleva un **esfuerzo Fibonacci de un dígito** (1, 2, 3, 5, 8) y el `Plan.md` mantiene el
   total del sprint, lo implementado y lo pendiente.
+- `tasks.md` se agrupa por **fase** (tests, implementación, validaciones, pasos manuales y revisión
+  manual); los pasos y las pruebas manuales los marca el usuario.
 - Cada HU cierra con un **barrido de huecos opcional** (subagente de solo lectura) que busca
   inconsistencias con impacto a largo plazo sin ampliar el alcance ni corregir por su cuenta.
 - Markdown puro, sin CLI de specs. La estrategia de tests se define o hereda en `/sda-sprint` y vive en el `Plan.md`.
