@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { COMMANDS_DIR, SKILLS_DIR } from './templates.js';
+import { AGENTS_DIR, COMMANDS_DIR, SKILLS_DIR } from './templates.js';
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -26,6 +26,14 @@ function listSkillDirs() {
     .sort();
 }
 
+function listAgentFiles() {
+  if (!fs.existsSync(AGENTS_DIR)) return [];
+  return fs
+    .readdirSync(AGENTS_DIR)
+    .filter((name) => name.endsWith('.md'))
+    .sort();
+}
+
 function installCommands(targetDir) {
   const dest = path.join(targetDir, '.opencode', 'commands');
   ensureDir(dest);
@@ -48,6 +56,17 @@ function installSkills(targetDir) {
     count += 1;
   }
   return count;
+}
+
+function installAgents(targetDir) {
+  const dest = path.join(targetDir, '.opencode', 'agents');
+  const files = listAgentFiles();
+  if (!files.length) return 0;
+  ensureDir(dest);
+  for (const name of files) {
+    copyFile(path.join(AGENTS_DIR, name), path.join(dest, name));
+  }
+  return files.length;
 }
 
 function scaffoldDirs(targetDir) {
@@ -80,11 +99,17 @@ export function runInit(targetDir) {
 
   const commands = installCommands(targetDir);
   const skills = installSkills(targetDir);
+  const agents = installAgents(targetDir);
   const dirs = scaffoldDirs(targetDir);
   const legacyBacklog = hasLegacyBacklogDir(targetDir);
 
   console.log(`  ✔ ${commands} comandos en .opencode/commands/`);
   console.log(`  ✔ ${skills} skills en .opencode/skills/`);
+  if (agents) {
+    console.log(
+      `  ✔ ${agents} subagente${agents === 1 ? '' : 's'} en .opencode/agents/`,
+    );
+  }
   console.log(
     dirs.length
       ? `  ✔ carpetas: ${dirs.join(', ')}`
@@ -106,9 +131,13 @@ export function runUpdate(targetDir) {
 
   const commands = installCommands(targetDir);
   const skills = installSkills(targetDir);
+  const agents = installAgents(targetDir);
 
   console.log(`  ✔ ${commands} comandos re-sincronizados`);
   console.log(`  ✔ ${skills} skills re-sincronizadas`);
+  if (agents) {
+    console.log(`  ✔ ${agents} subagente${agents === 1 ? '' : 's'} re-sincronizado${agents === 1 ? '' : 's'}`);
+  }
   console.log('  • backlog/ y specs/ no se tocaron');
   console.log('');
 }

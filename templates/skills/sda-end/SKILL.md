@@ -12,8 +12,8 @@ ni código para "hacer pasar": si algo falla, lo reportas y te detienes.
 
 ## 0. Identifica la HU
 
-- Localiza `backlog/<sprint>/HU_NN/` y su `Plan.md`. Lee `spec.md`, `design.md`, `tasks.md` y el
-  `Plan.md` completos.
+- Localiza `backlog/<sprint>/HU_NN/` y su `Plan.md`. Lee `spec.md`, `design.md`, `tasks.md`, el
+  `Plan.md` completos y, si existe, `revision.md` (barrido de huecos de `/sda-build`).
 - Si el contexto no alcanza, deduce la candidata desde el diff de git y **confírmala conmigo antes
   de tocar nada**.
 - Si el plan vive en `backlog/archive/<sprint>/`, ya estaba completo: no lo desarchives; repórtalo y
@@ -69,15 +69,24 @@ aquí.
 
 ## 5. Marca el backlog
 
-**En `tasks.md`:** marca `- [x]` todas las tareas.
+**En `tasks.md`:** marca `- [x]` todas las tareas, sin juntar checkboxes: cada una conserva su
+párrafo (línea en blanco antes y después).
 
 **En `Plan.md`:**
-- Marca `- [x]` únicamente la línea de esa HU en el Backlog.
+- Marca `- [x]` únicamente la línea de esa HU en el Backlog, sin juntar checkboxes: cada uno
+  conserva su párrafo (línea en blanco antes y después).
 - Actualiza `## Estado de implementación`:
   - Ninguna marcada → `**🔲 Planificado.** Ninguna historia implementada.`
   - Algunas → `**🟡 En curso.** Implementadas: HU1, HU3. Pendientes: HU2, HU4–HU14.` (rangos con
     guion).
   - Todas → `**✅ Implementado.** Todas las historias del plan están implementadas.`
+- Actualiza `## Esfuerzo del sprint`:
+  - `Implementado` = suma de `_(Esfuerzo: N)_` de las HU activas con `[x]`.
+  - `Total` = suma de las HU activas (las descartadas con `~~...~~` no cuentan).
+  - `Pendiente` = Total − Implementado.
+  - Formato exacto: `**Total: N pts · Implementado: N · Pendiente: N.**`
+  - Si el plan no tiene el bloque, avisá y ofrecé agregarlo con `/sda-sprint`. Si a la HU le falta
+    `_(Esfuerzo: N)_`, pedí el valor antes de cerrar. No inventes.
 
 **Historial en `spec.md`:** agrega al final `## Historial de finalización` (solo si no existe) con
 una entrada:
@@ -103,7 +112,8 @@ una entrada:
 ```
 
 Usa rutas relativas. No incluyas el diff completo; conserva nombres exactos de
-archivos/funciones/tests. No reescribas el resto de la HU.
+archivos/funciones/tests. No reescribas el resto de la HU. Si existe `revision.md` en la HU,
+incluí en **Otros** los hallazgos que sigan abiertos; no los arregles aquí.
 
 ## 6. Pregunta si se archiva el sprint
 

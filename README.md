@@ -21,10 +21,11 @@ sda init
 Esto crea:
 
 ```
-.opencode/commands/sda-*.md     ← 5 comandos: /sda-sprint, /sda-explore, /sda-spec, /sda-build, /sda-end
-.opencode/skills/sda-*/SKILL.md ← 5 skills con las reglas y plantillas
-backlog/                        ← backlog de sprints (se llena con /sda-sprint)
-specs/                          ← historia de specs viva (la mantiene /sda-end)
+.opencode/commands/sda-*.md      ← 5 comandos: /sda-sprint, /sda-explore, /sda-spec, /sda-build, /sda-end
+.opencode/skills/sda-*/SKILL.md  ← 5 skills con las reglas y plantillas
+.opencode/agents/sda-gap-scan.md ← subagente de barrido de huecos (solo lectura)
+backlog/                         ← backlog de sprints (se llena con /sda-sprint)
+specs/                           ← historia de specs viva (la mantiene /sda-end)
 ```
 
 Después ejecuta `/sda-sprint` en opencode: ahí se define (o se hereda de un sprint anterior) la estrategia de tests y queda guardada en el `Plan.md`.
@@ -35,7 +36,7 @@ Después ejecuta `/sda-sprint` en opencode: ahí se define (o se hereda de un sp
 sda update
 ```
 
-Re-sincroniza comandos y skills. No toca `backlog/` ni `specs/`.
+Re-sincroniza comandos, skills y subagente. No toca `backlog/` ni `specs/`.
 
 > Si vienes de la 0.5.x o anterior, renombra tu carpeta `Backlog/` a `backlog/` una vez:
 > `git mv Backlog backlog` (en Windows/macOS, si git no lo detecta, usa `git mv Backlog tmp && git mv tmp backlog`).
@@ -44,11 +45,37 @@ Re-sincroniza comandos y skills. No toca `backlog/` ni `specs/`.
 
 | Comando | Qué hace |
 |---|---|
-| `/sda-sprint` | Crea/actualiza el backlog y define/hereda la estrategia de tests (guardada en `Plan.md`). |
+| `/sda-sprint` | Crea/actualiza el backlog, asigna el esfuerzo por HU y define/hereda la estrategia de tests (guardada en `Plan.md`). |
 | `/sda-explore` | Indaga código + specs vivas + estrategia de tests y acuerda el enfoque de una HU. |
-| `/sda-spec` | Escribe `spec.md` (escenarios de test), `design.md` y `tasks.md` de una HU. |
-| `/sda-build` | Implementa con TDD: tests unitarios e integración → rojo → revisión → verde. |
+| `/sda-spec` | Escribe `spec.md` (escenarios de test), `design.md` y `tasks.md` de una HU; ajusta el esfuerzo si el diseño lo cambia. |
+| `/sda-build` | Implementa con TDD: tests unitarios e integración → rojo → revisión → verde. Al cerrar, ofrece un barrido superficial de huecos con un subagente de solo lectura. |
 | `/sda-end` | Valida, sincroniza specs vivas, marca la HU y archiva el sprint. |
+
+### Barrido de huecos
+
+Al terminar una HU en verde, `/sda-build` ofrece lanzar `sda-gap-scan`, un subagente de solo lectura
+que revisa lo justo: contrato de la spec, coherencia con el código existente, decisiones caras y
+deuda silenciosa. Devuelve hasta 5 hallazgos con severidad y evidencia; no corrige nada. Si aceptás,
+el informe queda en `backlog/<sprint>/HU_NN/revision.md` y `/sda-end` lo refleja en el historial.
+
+### Esfuerzo
+
+Cada HU lleva un esfuerzo de un dígito (**1, 2, 3, 5 u 8**, Fibonacci) en su línea del `Plan.md`:
+
+```markdown
+- [ ] **HU1** — Como tesorera, quiero ... _(Esfuerzo: 2)_
+```
+
+`/sda-sprint` lo estima al proponer el backlog y `/sda-spec` puede ajustarlo si el diseño revela otra
+cosa. El plan mantiene la suma del sprint:
+
+```
+## Esfuerzo del sprint
+
+**Total: 13 pts · Implementado: 5 · Pendiente: 8.**
+```
+
+Las HU descartadas no suman. Si una historia no entra en 8, se parte.
 
 ## CLI
 
@@ -75,6 +102,10 @@ directamente. En CI o scripts se omite sola; también puedes forzarlo con `sda i
 - Queda una **historia de specs viva** (`specs/`) que el agente consulta en cada exploración.
 - **Tests unitarios y de integración obligatorios** para proteger la lógica y los flujos entre
   módulos; exportación/datos exige validar **formato** y **peticiones**.
+- Cada HU lleva un **esfuerzo Fibonacci de un dígito** (1, 2, 3, 5, 8) y el `Plan.md` mantiene el
+  total del sprint, lo implementado y lo pendiente.
+- Cada HU cierra con un **barrido de huecos opcional** (subagente de solo lectura) que busca
+  inconsistencias con impacto a largo plazo sin ampliar el alcance ni corregir por su cuenta.
 - Markdown puro, sin CLI de specs. La estrategia de tests se define o hereda en `/sda-sprint` y vive en el `Plan.md`.
 
 ## Desarrollo

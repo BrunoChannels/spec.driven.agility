@@ -29,6 +29,8 @@ enfoques.
    construida la app por especificación".
 3. **El código real** — mapeo la arquitectura relevante, puntos de integración, patrones ya usados
    y complejidad oculta.
+4. **El esfuerzo de la HU** — leo `_(Esfuerzo: N)_` del `Plan.md`. Si el enfoque lo cambia (más
+   grande, más chico o no entra en 8), lo digo; se ajusta en `/sda-spec`.
 
 ## Qué suelo hacer
 

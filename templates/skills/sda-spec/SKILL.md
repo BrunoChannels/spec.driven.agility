@@ -1,6 +1,6 @@
 ---
 name: sda-spec
-description: Escribe los tres artefactos de una HU (spec con escenarios de test como contrato, design y tasks) a partir del enfoque acordado. No escribe código; la implementación es /sda-build.
+description: Escribe los tres artefactos de una HU (spec con escenarios de test como contrato, design y tasks) a partir del enfoque acordado y ajusta su esfuerzo en el Plan.md. No escribe código; la implementación es /sda-build.
 disable-model-invocation: true
 ---
 
@@ -35,7 +35,10 @@ cubren con tests unitarios y de integración.
    decisiones, out of scope.
 6. **Redactar `tasks.md`** (ver plantilla): pasos de implementación con los **tests primero**
    (rojo), una pausa de revisión y el código después (verde).
-7. **Esperar mi aprobación.** Ajustamos hasta que diga que sí. Luego me ofreces `/sda-build`.
+7. **Ajustar esfuerzo.** Lee `_(Esfuerzo: N)_` de la HU en el `Plan.md`; si falta, pedímelo. Si el
+   diseño revela que la historia es más grande, más chica o no entra en 8, propón el nuevo valor,
+   actualiza la línea y recalcula `## Esfuerzo del sprint`. No toques el esfuerzo de otras HU.
+8. **Esperar mi aprobación.** Ajustamos hasta que diga que sí. Luego me ofreces `/sda-build`.
 
 ## Reglas
 
@@ -46,6 +49,8 @@ cubren con tests unitarios y de integración.
 - **Unitarios para lógica pura; integración para lo que cruza módulos**, CLI, base de datos, API o
   filesystem. Elige el nivel según lo que recorra el escenario.
 - **No escribas código.** Solo los tres artefactos.
+- **Esfuerzo en el plan.** No repitas el esfuerzo en `spec.md`/`design.md`/`tasks.md`: la fuente es
+  la línea de la HU en `Plan.md`.
 - **Ligero.** Nada de sobre-refinar: spec con pocos requisitos claros, design de una página, tasks
   de 4–7 pasos.
 
@@ -118,9 +123,17 @@ El sistema DEBE <qué hace, desde el punto de vista del usuario>.
 # HU_NN — Tareas
 
 - [ ] 1. Escribir los tests unitarios e integración a partir de los escenarios de `spec.md` (rojo).
+
 - [ ] 2. Mostrar el rojo y detenerse para revisión.
+
 - [ ] 3. <implementar la pieza mínima que pasa el escenario 1>
+
 - [ ] 4. <implementar la pieza mínima que pasa el escenario 2>
+
 - [ ] 5. Correr unitarios e integración y dejarlos en verde.
+
 - [ ] 6. (exportación/datos) Validar formato y peticiones.
 ```
+
+Cada checkbox va en su propio párrafo: una línea en blanco antes y otra después. Nunca pegues dos
+checkboxes seguidos.

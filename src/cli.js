@@ -17,10 +17,11 @@ Uso:
   sda <comando> [ruta]
 
 Comandos:
-  init [ruta]     Instala los comandos /sda-*, las skills y las carpetas
-                  backlog/ y specs/. Por defecto usa el directorio actual.
-                  Usa --no-animation para omitir la intro animada.
-  update [ruta]   Re-sincroniza comandos y skills. No toca config ni datos.
+  init [ruta]     Instala los comandos /sda-*, las skills, el subagente y las
+                  carpetas backlog/ y specs/. Por defecto usa el directorio
+                  actual. Usa --no-animation para omitir la intro animada.
+  update [ruta]   Re-sincroniza comandos, skills y subagente. No toca config
+                  ni datos.
   version         Muestra la versión instalada.
   help            Muestra esta ayuda.
 

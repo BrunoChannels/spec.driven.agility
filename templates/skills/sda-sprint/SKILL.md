@@ -1,6 +1,6 @@
 ---
 name: sda-sprint
-description: Crea o actualiza el backlog de un sprint como historias de usuario verticales. Define o hereda la estrategia de tests (unitarios e integración) y la guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
+description: Crea o actualiza el backlog de un sprint como historias de usuario verticales, asigna esfuerzo de un dígito (1, 2, 3, 5, 8) y total del sprint. Define o hereda la estrategia de tests (unitarios e integración) y la guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
 disable-model-invocation: true
 ---
 
@@ -52,7 +52,7 @@ Bloque exacto en el `plan.md` (debajo de `## Contexto`):
    - Modelo de permisos o roles
    - Offline o sync
    - Multi-idioma o multi-moneda
-4. Propón el backlog. Yo lo ajusto.
+4. Propón el backlog con un esfuerzo por historia y el total del sprint. Yo lo ajusto.
 
 ## 3. Reglas
 
@@ -63,8 +63,10 @@ Bloque exacto en el `plan.md` (debajo de `## Contexto`):
   de datos" no es historia; esa infraestructura se construye dentro de la primera historia que la
   necesita.
 - **Pocas historias.** 10–15 como máximo. Prefiero agregar antes que recortar.
-- **Una línea por historia.** Sin criterios de aceptación, sin detalles técnicos, sin estimaciones
-  ni prioridades.
+- **Una línea por historia.** Sin criterios de aceptación, sin detalles técnicos ni prioridades. El
+  esfuerzo va como etiqueta numérica, no como prosa.
+- **Esfuerzo de un dígito:** asigna a cada historia **1, 2, 3, 5 u 8**. Es tamaño relativo, no horas.
+  Si una historia no entra en 8, partila.
 - La primera historia es la más chica usable de punta a punta (esqueleto caminante).
 - **Modificable/descartable:** puedo pedir reordenar, reformular o descartar cualquier historia; se
   hace sin trámite.
@@ -78,11 +80,14 @@ Stack: <lo acordado>
 Decisiones caras: <las que aplican, o "ninguna">
 
 ## Backlog
-1. Como <actor>, quiero <acción>, para <beneficio>.
-2. Como <actor>, quiero <acción>, para <beneficio>. Requiere: #1
+1. Como <actor>, quiero <acción>, para <beneficio>. — **2**
+2. Como <actor>, quiero <acción>, para <beneficio>. — **5** _(Requiere: #1)_
+
+**Total del sprint: 7 pts.**
 ```
 
-Agrega `Requiere: #N` solo cuando una historia no tiene sentido sin otra.
+Agrega `Requiere: #N` solo cuando una historia no tiene sentido sin otra. El número en negrita es el
+esfuerzo; el total es la suma de las historias activas.
 
 ## 5. Guardar el plan
 
@@ -111,15 +116,24 @@ Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
 **🔲 Planificado.** Ninguna historia implementada.
 
+## Esfuerzo del sprint
+
+**Total: 7 pts · Implementado: 0 · Pendiente: 7.**
+
 ## Backlog
 
-- [ ] **HU1** — Como <actor>, quiero <acción>, para <beneficio>.
+- [ ] **HU1** — Como <actor>, quiero <acción>, para <beneficio>. _(Esfuerzo: 2)_
 
-- [ ] **HU2** — Como <actor>, quiero <acción>, para <beneficio>. _(Requiere: #1)_
+- [ ] **HU2** — Como <actor>, quiero <acción>, para <beneficio>. _(Esfuerzo: 5)_ _(Requiere: #1)_
 ```
 
-- Checkbox siempre (`- [ ]` o `- [x]`); `_(Requiere: #N)_` solo donde se acordó. Cada checkbox
-  separado del siguiente por una línea en blanco.
+- Checkbox siempre (`- [ ]` o `- [x]`); `_(Esfuerzo: N)_` es obligatorio y va antes de
+  `_(Requiere: #N)_`, que solo aparece donde se acordó.
+- **Cada checkbox es su propio párrafo:** una línea en blanco antes y otra después. Nunca pegues dos
+  checkboxes seguidos.
+- `## Esfuerzo del sprint` se recalcula siempre: **Total** = suma de las HU activas; **Implementado**
+  = suma de las HU activas con `[x]`; **Pendiente** = Total − Implementado. Las HU descartadas
+  (`~~...~~`) no suman.
 - No toques `AGENTS.md` ni ningún otro archivo.
 
 ## 6. Actualizar un plan existente
@@ -127,3 +141,9 @@ Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 - Al actualizar: marca `[x]` las HU terminadas, y permite reordenar, reformular o descartar
   (tachando con `~~...~~` y su motivo). Reescribe solo lo que cambió; nunca inventes HU. Si el
   `plan.md` no tiene `## Estrategia de tests`, aplícala (hereda o pregunta) antes de seguir.
+- **Recalculá el esfuerzo** después de cualquier cambio: la suma de las HU activas es el `Total`;
+  `Implementado` es la suma de las HU activas con `[x]`; `Pendiente` es la diferencia. Una HU
+  descartada deja de sumar.
+- Si el `plan.md` no tiene `## Esfuerzo del sprint`, agrégalo y propón un esfuerzo para cada HU
+  (1, 2, 3, 5 u 8). Si alguna HU no tiene `_(Esfuerzo: N)_`, complétalo antes de guardar.
+- Conservá el espaciado: cada checkbox en su párrafo, con línea en blanco antes y después.

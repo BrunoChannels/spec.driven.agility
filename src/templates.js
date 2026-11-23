@@ -15,3 +15,6 @@ export const COMMANDS_DIR = path.join(TEMPLATES_DIR, 'commands');
 /** Plantillas de skills `sda-*`. */
 export const SKILLS_DIR = path.join(TEMPLATES_DIR, 'skills');
 
+/** Definiciones de subagentes `sda-*`. */
+export const AGENTS_DIR = path.join(TEMPLATES_DIR, 'agents');
+

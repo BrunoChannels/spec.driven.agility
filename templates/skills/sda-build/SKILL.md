@@ -1,6 +1,6 @@
 ---
 name: sda-build
-description: Implementa una HU de punta a punta con TDD: escribe primero los tests unitarios y de integración, muestra el rojo y espera revisión, implementa el mínimo y deja verde. Nunca commitea.
+description: Implementa una HU de punta a punta con TDD: escribe primero los tests unitarios y de integración, muestra el rojo y espera revisión, implementa el mínimo y deja verde. Al cerrar, ofrece un barrido superficial de huecos con un subagente de solo lectura. Nunca commitea.
 disable-model-invocation: true
 ---
 
@@ -41,7 +41,33 @@ Pasos grandes: **una HU = sus tests en verde = una entrega**. No se para en cada
 2. Corre los tests unitarios y los de integración y muestra verde.
 3. En caso de que la implementación requiera tocar tests existentes, **párate y conversa** antes de cambiar nada. Explica qué falla, por qué y qué cambiará.
 
-## 4. Entrega
+## 4. Barrido de huecos (opcional)
+
+Con la HU en verde, antes del cierre, ofrecé un barrido superficial de solo lectura.
+
+1. Preguntá una sola vez, con la herramienta de preguntas:
+   **"¿Lanzo el barrido superficial de huecos e inconsistencias? (solo lectura, ~10 lecturas)"**.
+   Opciones: **Sí** (recomendado) / **No**.
+2. Si digo que no, pasá a la entrega sin mencionarlo.
+3. Si digo que sí, lanzá el subagente `sda-gap-scan` con la herramienta de subagentes. Si el agente no
+   está disponible, usá `explore` con el mismo brief. Si tampoco podés, avisá y cerrá normal.
+4. Brief compacto (no pegues el diff completo):
+   - rutas de `backlog/<sprint>/HU_NN/`, su `Plan.md` y `specs/<capability>/spec.md`;
+   - archivos tocados (`git status --short` y `git diff --stat`);
+   - una o dos líneas de qué entrega la HU;
+   - comandos de unitarios e integración y que están en verde;
+   - mi idioma y **"no modifiques nada"**.
+5. Esperá el informe antes de cerrar.
+6. **No arregles nada** de lo que reporte: ni código, ni tests, ni artefactos. Tampoco lo conviertas en
+   tarea por tu cuenta.
+7. Si hay un hallazgo **alto** que contradice `spec.md`/`design.md` o deja un contrato ambiguo,
+   mostralo antes de cerrar y preguntame cómo seguir.
+8. Si hay al menos un hallazgo, ofrecé guardarlo con la herramienta de preguntas:
+   **"¿Guardo el informe en `backlog/<sprint>/HU_NN/revision.md`?"** (Sí / No). Si acepto, escribí
+   vos el archivo (el subagente no puede): título `# HU_NN — Barrido de huecos`, fecha, veredicto,
+   tabla y alcance. Nada más.
+
+## 5. Entrega
 
 Un único mensaje de cierre:
 
@@ -52,9 +78,13 @@ Piezas creadas:
 2. ...
 Manual: <qué hay que probar a mano, si queda algo>
 Decidí: <juicio propio, si hubo>
+🔍 Barrido: <n> hallazgos — <guardado en `revision.md` | solo en chat>
+1. [alta] <tipo> — `archivo:línea` — <impacto> → <sugerencia>
 ¿Reviso contigo, ajusto algo o cierro con /sda-end?
 ```
 
+- Incluí el bloque `🔍 Barrido` solo si corriste el barrido. Si no hubo hallazgos, escribí
+  `🔍 Barrido: sin hallazgos relevantes.`
 - Listado ordenado y solo lo nuevo: nombre, para qué sirve, dónde vive.
 - Sugiere mensaje de commit si es buen punto (funcionalidad y refactor en commits distintos).
   **Nunca commitees.**
@@ -66,6 +96,8 @@ Decidí: <juicio propio, si hubo>
 - **Hay que tocar un test** existente: párate antes, avisa cuál, por qué y qué cambiará.
 - **Hay que tocar funcionalidad preexistente**: evidéncialo (qué hace hoy, quién depende, qué se
   rompería) y muéstralo para conversar antes de tocarlo.
+- **El barrido reporta un hallazgo alto** que contradice `spec.md`/`design.md`: mostralo y preguntá;
+  no lo corrijas por tu cuenta.
 - Dos intentos sin verde.
 
 ## Reglas de test
