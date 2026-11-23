@@ -30,6 +30,11 @@ specs/                           ← historia de specs viva (la mantiene /sda-en
 
 Después ejecuta `/sda-sprint` en opencode: ahí se define (o se hereda de un sprint anterior) la estrategia de tests y queda guardada en el `Plan.md`.
 
+> **Otras raíces de specs vivas.** Si el repo ya trae otra raíz de specs de una metodología anterior
+> (por ejemplo `openspec/specs/`), `/sda-end` sincroniza la HU en **todas** las raíces: `specs/`
+> (principal) y cada espejo que ya tenga la capability. Ninguna se omite ni se sobrescribe con una
+> copia del archivo completo. Los deltas archivados (`openspec/changes/`) no se tocan.
+
 ### Actualizar la metodología
 
 ```bash
@@ -112,7 +117,9 @@ directamente. En CI o scripts se omite sola; también puedes forzarlo con `sda i
 
 - La fuente de verdad es un **Backlog de Sprint** con historias modificables y descartables.
 - Cada HU recorre: **explorar → especificar → construir (tests primero) → cerrar y sincronizar**.
-- Queda una **historia de specs viva** (`specs/`) que el agente consulta en cada exploración.
+- Queda una **historia de specs viva** (`specs/`) que el agente consulta en cada exploración; al
+  cerrar una HU, `/sda-end` la sincroniza también en los espejos de specs existentes (p. ej.
+  `openspec/specs/`).
 - **Tests unitarios y de integración obligatorios** para proteger la lógica y los flujos entre
   módulos; exportación/datos exige validar **formato** y **peticiones**.
 - Cada HU lleva un **esfuerzo Fibonacci de un dígito** (1, 2, 3, 5, 8) y el `Plan.md` mantiene el

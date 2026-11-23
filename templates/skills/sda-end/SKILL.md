@@ -1,14 +1,15 @@
 ---
 name: sda-end
-description: Cierra la HU recién implementada: valida tests unitarios e integración en verde y regresiones, sincroniza la spec de la HU en la spec viva, marca la HU en el checklist del Plan sin tocar los pasos ni las pruebas manuales, agrega historial y ofrece archivar el sprint. Nunca commitea.
+description: Cierra la HU recién implementada: valida tests unitarios e integración en verde y regresiones, sincroniza la spec de la HU en TODAS las raíces de specs vivas (specs/ y espejos como openspec/specs/), marca la HU en el checklist del Plan sin tocar los pasos ni las pruebas manuales, agrega historial y ofrece archivar el sprint. Nunca commitea.
 disable-model-invocation: true
 ---
 
 # Cerrar historia (SDA)
 
 Cierras la HU que se acaba de implementar con `/sda-build`. Primero verificas, después decides, y
-solo si todo pasa marcas el backlog y sincronizas specs. **Nunca commitees.** Nunca ajustes un test
-ni código para "hacer pasar": si algo falla, lo reportas y te detienes.
+solo si todo pasa marcas el backlog y sincronizas las specs vivas **en todas sus raíces** (`specs/` y
+los espejos que existan). **Nunca commitees.** Nunca ajustes un test ni código para "hacer pasar": si
+algo falla, lo reportas y te detienes.
 
 ## 0. Identifica la HU
 
@@ -52,20 +53,54 @@ aquí.
 - **Regla rota** → no marques ni sincronices. Informe breve: regla, evidencia (`archivo:línea`,
   comando), impacto, opciones; pregunta cómo seguir.
 
-## 4. Sincroniza la spec viva
+## 4. Sincroniza las specs vivas (todas las raíces)
 
-- Usa `Capability:` del `spec.md` para ubicar `specs/<capability>/spec.md`.
-- **Fusión inteligente (markdown, sin CLI):**
-  - Por cada `### Requirement` de la HU:
-    - No existe en la spec viva → agrégalo con sus escenarios.
-    - Ya existe → actualízalo: agrega/modifica escenarios o descripción, preservando lo que la HU no
-      menciona.
-  - `## Requisitos eliminados` → quita esos bloques de la spec viva. Si al quitar no queda ningún
-    requisito, no dejes una sección vacía: repórtalo y detente (no borres el archivo por tu cuenta).
-  - `## Requisitos renombrados` → aplica FROM→TO.
+Una spec sincronizada en una sola raíz es una sincronización incompleta. Antes de editar, descubre
+**todas las raíces de specs vivas** del repo y sincroniza la HU en cada una; ninguna se omite.
+
+**a) Descubre las raíces (obligatorio, antes de escribir):**
+
+- Usa `Capability:` del `spec.md` como nombre de carpeta del destino.
+- **Raíz principal SDA:** `specs/` en la raíz del repo. Es la fuente de verdad de este proyecto: la
+  spec de la HU siempre debe terminar ahí. Si no existe, créala (`specs/<capability>/spec.md`).
+- **Espejos:** cualquier otra carpeta con la misma forma `<raíz>/specs/<capability>/spec.md`, típica
+  de un historial antiguo de otro sistema de specs (por ejemplo `openspec/specs/`). Búscalas por
+  patrón (`**/specs/*/spec.md`) y excluye `node_modules/`, `.opencode/`, `backlog/` y
+  `openspec/changes/` (los cambios activos o archivados son deltas, no specs vivas: no se editan).
+- Deja constancia de las rutas encontradas antes de tocar nada, por ejemplo:
+  `specs/<capability>/spec.md` + `openspec/specs/<capability>/spec.md`.
+
+**b) Define los destinos:**
+
+- `specs/<capability>/spec.md` **siempre**. Si la capability no existe ahí, créala con `## Purpose`
+  (1–2 frases) y los requisitos de la HU.
+- **Cada espejo que ya tenga** `<capability>/spec.md` en su propia raíz de specs. Si un espejo no
+  tiene esa capability, no inventes estructura nueva en él: repórtalo como
+  "no existe en `<espejo>`".
+- Nunca elijas un solo destino. Cerrar con la spec escrita únicamente en `specs/` o únicamente en un
+  espejo (p. ej. `openspec/specs/`) es un cierre incompleto: corrígelo antes de marcar el backlog.
+- La spec viva no se escribe en `.opencode/` (ahí viven skills y comandos) ni dentro de `backlog/`:
+  esos archivos son artefactos de la HU, no la historia de specs.
+
+**c) Aplica la misma fusión inteligente (markdown, sin CLI) a CADA destino:**
+
+- Por cada `### Requirement` de la HU:
+  - No existe en esa spec viva → agrégalo con sus escenarios.
+  - Ya existe → actualízalo: agrega/modifica escenarios o descripción, preservando lo que la HU no
+    menciona.
+- `## Requisitos eliminados` → quita esos bloques de esa spec viva. Si al quitar no queda ningún
+  requisito, no dejes una sección vacía: repórtalo y detente (no borres el archivo por tu cuenta).
+- `## Requisitos renombrados` → aplica FROM→TO.
 - Mantén la estructura de la spec viva: `## Purpose`, `## Requirements`, `### Requirement` +
   `#### Scenario`. Nunca copies secciones delta (ADDED/MODIFIED) en la spec viva.
-- La operación debe ser **idempotente**: correrla dos veces da el mismo resultado.
+- La fusión es la misma en todos los destinos, pero **no copies un archivo completo sobre otro**:
+  cada uno conserva su `## Purpose` y los requisitos que la HU no menciona. Al terminar, todos los
+  destinos contienen los requisitos y escenarios de la HU.
+- La operación debe ser **idempotente en el conjunto**: correrla dos veces deja los mismos archivos.
+
+**d) Verifica y deja constancia:** lista cada archivo tocado con su ruta relativa completa (raíz
+principal y espejos) y confirma que la HU quedó en todos. Si un destino queda fuera, no marques el
+backlog: detente y repórtalo.
 
 ## 5. Marca el backlog
 
@@ -143,7 +178,9 @@ Solo cuando **acabas de marcar la última HU pendiente** del Backlog:
 
 Mensaje breve y claro:
 
-- ✅ `HU_NN` validada, spec sincronizada en `specs/<capability>/spec.md` y HU marcada.
+- ✅ `HU_NN` validada, HU marcada y spec sincronizada en **todas** las raíces detectadas:
+  `specs/<capability>/spec.md` y cada espejo (p. ej. `openspec/specs/<capability>/spec.md`). Enumera
+  las rutas tocadas; no resumas "spec sincronizada" con una sola.
 - Dos o tres datos: qué quedó funcionando, verificaciones en verde y qué pasos y pruebas manuales
   quedan sin marcar. Si hay pasos manuales pendientes, decí "validada en código, pendiente de
   puesta en marcha".
