@@ -44,15 +44,26 @@ function installCommands(targetDir) {
   return files.length;
 }
 
+function copyDirRecursive(src, dest) {
+  ensureDir(dest);
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+    const from = path.join(src, entry.name);
+    const to = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDirRecursive(from, to);
+    else if (entry.isFile()) copyFile(from, to);
+  }
+}
+
 function installSkills(targetDir) {
   const destRoot = path.join(targetDir, '.opencode', 'skills');
   ensureDir(destRoot);
   const dirs = listSkillDirs();
   let count = 0;
   for (const name of dirs) {
-    const src = path.join(SKILLS_DIR, name, 'SKILL.md');
-    if (!fs.existsSync(src)) continue;
-    copyFile(src, path.join(destRoot, name, 'SKILL.md'));
+    const src = path.join(SKILLS_DIR, name);
+    if (!fs.existsSync(path.join(src, 'SKILL.md'))) continue;
+    copyDirRecursive(src, path.join(destRoot, name));
     count += 1;
   }
   return count;
@@ -67,18 +78,6 @@ function installAgents(targetDir) {
     copyFile(path.join(AGENTS_DIR, name), path.join(dest, name));
   }
   return files.length;
-}
-
-function scaffoldDirs(targetDir) {
-  const created = [];
-  for (const name of ['backlog', 'specs']) {
-    const dir = path.join(targetDir, name);
-    if (fs.existsSync(dir)) continue;
-    ensureDir(dir);
-    fs.writeFileSync(path.join(dir, '.gitkeep'), '');
-    created.push(name);
-  }
-  return created;
 }
 
 function hasLegacyBacklogDir(targetDir) {
@@ -100,7 +99,6 @@ export function runInit(targetDir) {
   const commands = installCommands(targetDir);
   const skills = installSkills(targetDir);
   const agents = installAgents(targetDir);
-  const dirs = scaffoldDirs(targetDir);
   const legacyBacklog = hasLegacyBacklogDir(targetDir);
 
   console.log(`  ✔ ${commands} comandos en .opencode/commands/`);
@@ -110,11 +108,7 @@ export function runInit(targetDir) {
       `  ✔ ${agents} subagente${agents === 1 ? '' : 's'} en .opencode/agents/`,
     );
   }
-  console.log(
-    dirs.length
-      ? `  ✔ carpetas: ${dirs.join(', ')}`
-      : '  • backlog/ y specs/ ya existían',
-  );
+  console.log('  • backlog/ la crea /sda-sprint · specs/ la crea /sda-end');
   if (legacyBacklog) {
     console.log(
       '  ! Detecté Backlog/ de una versión anterior: renómbrala a backlog/ para que los skills la encuentren.',

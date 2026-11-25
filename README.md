@@ -1,5 +1,7 @@
 # Spec-Driven Agility (SDA)
 
+> Versión actual: **0.12.0**
+
 CLI que instala la metodología **Spec-Driven Agility** en cualquier proyecto con [opencode](https://opencode.ai):
 backlog ágil de historias de usuario, artefactos por HU y **tests unitarios y de integración**.
 
@@ -21,12 +23,14 @@ sda init
 Esto crea:
 
 ```
-.opencode/commands/sda-*.md      ← 5 comandos: /sda-sprint, /sda-explore, /sda-spec, /sda-build, /sda-end
-.opencode/skills/sda-*/SKILL.md  ← 5 skills con las reglas y plantillas
+.opencode/commands/sda-*.md      ← 6 comandos: /sda-sprint, /sda-explore, /sda-spec, /sda-build, /sda-end, /sda-sync-trello
+.opencode/skills/sda-*/SKILL.md  ← 6 skills con las reglas y plantillas
 .opencode/agents/sda-gap-scan.md ← subagente de barrido de huecos (solo lectura)
-backlog/                         ← backlog de sprints (se llena con /sda-sprint)
-specs/                           ← historia de specs viva (la mantiene /sda-end)
 ```
+
+`sda init` **no crea** las carpetas de datos: `backlog/` la crea `/sda-sprint` al guardar el primer
+plan y `specs/` la crea `/sda-end` al sincronizar la primera HU. Así el proyecto no queda con carpetas
+vacías y ninguna existente se reemplaza.
 
 Después ejecuta `/sda-sprint` en opencode: ahí se define (o se hereda de un sprint anterior) la estrategia de tests y queda guardada en el `Plan.md`.
 
@@ -54,7 +58,8 @@ Re-sincroniza comandos, skills y subagente. No toca `backlog/` ni `specs/`.
 | `/sda-explore` | Indaga código + specs vivas + estrategia de tests y acuerda el enfoque de una HU. |
 | `/sda-spec` | Escribe `spec.md` (escenarios de test), `design.md` y `tasks.md` por fases con pasos y pruebas manuales; ajusta el esfuerzo si el diseño lo cambia. |
 | `/sda-build` | Implementa con TDD: tests unitarios e integración → rojo → revisión → verde. Al cerrar, ofrece un barrido superficial de huecos con un subagente de solo lectura. |
-| `/sda-end` | Valida, sincroniza specs vivas, marca la HU sin tocar los pasos ni las pruebas manuales y archiva el sprint. |
+| `/sda-end` | Cierra la HU en una sola corrida: valida, pide confirmación, sincroniza specs vivas, marca la HU sin tocar los pasos ni las pruebas manuales, archiva la HU y ofrece archivar el sprint. |
+| `/sda-sync-trello` | Espeja el backlog en un tablero Kanban de Trello: configura credenciales y tablero, sube las HUs como tarjetas y actualiza o cierra la tarjeta de la HU en curso. |
 
 ### Barrido de huecos
 
@@ -93,14 +98,70 @@ Las dos últimas fases son del usuario: los **pasos manuales** son acciones que 
 hacer (agregar variables de entorno en un servidor, ejecutar SQL en una base real, configurar
 secretos, DNS o webhooks); la **revisión manual** son pruebas concretas de aceptación (acción +
 resultado esperado). Ni `/sda-build` ni `/sda-end` marcan esas tareas: las marca el usuario. Si
-quedan pendientes, `/sda-end` las copia al historial.
+quedan pendientes, `/sda-end` las lista y no sincroniza ni archiva hasta que las marques.
+
+### Archivado
+
+`/sda-end` es un cierre todo en uno: además de validar y sincronizar las specs, archiva la HU. Antes
+de escribir nada exige `tasks.md` sin pendientes manuales y pide una confirmación explícita:
+**¿Estás seguro de que querés sincronizar las specs vivas y archivar `HU_NN`?**. Si decís que no, no
+toca nada.
+
+Al confirmar, la carpeta se mueve a `backlog/<sprint>/archive/HU_NN/` con el movimiento del sistema
+(nunca `git mv`, nunca commit) y el `Plan.md` no cambia. Hay dos niveles de archivo:
+
+| Nivel | Ruta | Cuándo |
+|---|---|---|
+| HU | `backlog/<sprint>/archive/HU_NN/` | En cada `/sda-end` confirmado. |
+| Sprint | `backlog/archive/<sprint>/` | Se pregunta al cerrar la última HU del plan; la HU ya archivada viaja dentro (`backlog/archive/<sprint>/archive/HU_NN/`). |
+
+Si el destino ya existe, `/sda-end` se detiene: nunca sobrescribe ni fusiona.
+
+## Trello
+
+`/sda-sync-trello` espeja el backlog en un tablero Kanban (`Por Hacer → En proceso → En revisión →
+Finalizado`). El `plan.md` sigue siendo la fuente de verdad; Trello es la vista operativa.
+
+**Credenciales (una vez por máquina).** La API de Trello exige API key **y** token:
+
+```
+https://trello.com/1/authorize?expiration=never&scope=read,write&response_type=token&name=SDA-Sync-Trello&key=<API_KEY>
+```
+
+El comando las pide la primera vez y las guarda en `~/.sda/credentials.json` (fuera del repo). Las
+variables `TRELLO_KEY` y `TRELLO_TOKEN` tienen precedencia, útil en CI.
+
+**Tablero (una vez por proyecto).** La URL se guarda en `.opencode/trello.json` junto con el mapeo de
+las cuatro listas, las etiquetas y el id de cada tarjeta. No se versiona ningún secreto.
+
+**Qué hace según el contexto:**
+
+| Situación | Acción |
+|---|---|
+| Sin HUs trabajadas en la sesión | Sube el sprint: crea las tarjetas faltantes con etiquetas de sprint, esfuerzo (1/2/3/5/8) y fase si el plan la declara. |
+| HU en curso | Mueve su tarjeta, sincroniza la descripción, crea la checklist desde `tasks.md` y añade comentarios o enlaces de PR. |
+| Tras `/sda-end` | Marca la tarjeta como finalizada, la mueve a *Finalizado* y comenta el cierre. |
+
+Comandos del CLI interno (sin `--apply` son dry-run):
+
+```bash
+node .opencode/skills/sda-sync-trello/scripts/trello.mjs doctor
+node .opencode/skills/sda-sync-trello/scripts/trello.mjs state
+node .opencode/skills/sda-sync-trello/scripts/trello.mjs seed --apply
+node .opencode/skills/sda-sync-trello/scripts/trello.mjs sync-hu --hu HU3 --move review --apply
+```
+
+Garantías: nunca borra tarjetas, etiquetas ni listas; nunca crea listas sin permiso; es idempotente
+(re-ejecutar no duplica ni reescribe descripciones idénticas); identifica las tarjetas por número de
+HU (`HU1`, `HU-01` y `HU_1` son la misma); y respeta el límite de ~100 escrituras / 10 s.
 
 ## CLI
 
 ```
 sda <comando> [ruta]
 
-init [ruta]     Instala todo en el proyecto (por defecto, el directorio actual).
+init [ruta]     Instala comandos, skills y subagente en el proyecto (por defecto,
+                el directorio actual). No crea backlog/ ni specs/.
                 Muestra la intro animada; usa --no-animation para omitirla.
 update [ruta]   Re-sincroniza comandos y skills.
 version         Muestra la versión.
@@ -117,6 +178,8 @@ directamente. En CI o scripts se omite sola; también puedes forzarlo con `sda i
 
 - La fuente de verdad es un **Backlog de Sprint** con historias modificables y descartables.
 - Cada HU recorre: **explorar → especificar → construir (tests primero) → cerrar y sincronizar**.
+- Al cerrar, la HU se **archiva** en `backlog/<sprint>/archive/HU_NN/` y el plan conserva el estado
+  del sprint; la carpeta del sprint sigue siendo el índice de sus HU.
 - Queda una **historia de specs viva** (`specs/`) que el agente consulta en cada exploración; al
   cerrar una HU, `/sda-end` la sincroniza también en los espejos de specs existentes (p. ej.
   `openspec/specs/`).

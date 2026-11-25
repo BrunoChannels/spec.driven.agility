@@ -95,6 +95,9 @@ Decidí: <juicio propio, si hubo>
   Marca solo las fases de tests, implementación y validaciones. Si `tasks.md` usa el formato viejo
   (lista plana), distinguilas por su descripción.
 - Listado ordenado y solo lo nuevo: nombre, para qué sirve, dónde vive.
+- Si existe `.opencode/trello.json`, ofrece una sola vez mover la tarjeta de esta HU a **En revisión**
+  con la skill `sda-sync-trello` (opcional, nunca automático). Si no hay configuración de Trello, no
+  lo menciones.
 - Sugiere mensaje de commit si es buen punto (funcionalidad y refactor en commits distintos).
   **Nunca commitees.**
 

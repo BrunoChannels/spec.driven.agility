@@ -94,9 +94,12 @@ esfuerzo; el total es la suma de las historias activas.
 Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
 - Carpeta: `backlog/<nombre-descriptivo>/plan.md` (kebab-case en español, 2–4 palabras, sin acentos).
-- Si `backlog/` no existe, créala con esa grafía.
+- Crea `backlog/` **solo si no existe**, en el momento de guardar el `plan.md` (no antes). Si ya
+  existe, no la borres, vacíes ni reemplaces: se usa tal cual y se aplica la regla de la carpeta del
+  sprint.
 - Si la carpeta ya existe, pregunta si actualizo su `plan.md` o uso otro nombre. Nunca sobrescribas
   sin preguntar.
+- `/sda-sprint` es el único dueño de `backlog/`: `sda init` no la crea.
 - Formato de `plan.md`:
 
 ```markdown
