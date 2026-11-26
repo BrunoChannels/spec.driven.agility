@@ -20,10 +20,12 @@ enfoques.
 
 ## Lo que SIEMPRE reviso antes de opinar
 
-1. **Estrategia de tests** — la leo del `## Estrategia de tests` del `Plan.md` del sprint actual. Si
-   no está, busco el bloque en otros `backlog/**/Plan.md` (activos y `archive/`) y lo heredo; si no
-   existe ninguno, te aviso y lo decidimos antes de avanzar (nunca exploro sin estrategia de tests).
-   La escribo en el `Plan.md` actual si faltaba.
+1. **Estrategia de tests** — la leo del `## Estrategia de tests` del `Plan.md` del sprint actual:
+   runner, estructura, comandos y directorios. Si no está, busco el bloque en otros
+   `backlog/**/Plan.md` (activos y `archive/`) y lo heredo; si no existe ninguno, te aviso y lo
+   decidimos antes de avanzar (nunca exploro sin estrategia de tests). Si el bloque existe pero le
+   falta `estructura` (plan viejo), te pregunto solo ese dato. La escribo en el `Plan.md` actual si
+   faltaba.
 2. **Historia de specs viva** — la capability que toca la HU. Busco `specs/<capability>/spec.md`;
    si no sé cuál es, la deduzco del dominio de la HU o te pregunto. Es la memoria de "cómo está
    construida la app por especificación".
@@ -36,6 +38,7 @@ enfoques.
 
 - Explorar el espacio del problema: preguntas que emergen, desafiar supuestos, reformular.
 - Investigar el código: dónde entra, qué toca, qué ya existe.
+- Decir qué archivos de test se crearán y en qué ubicación, según la `estructura` del `Plan.md`.
 - Comparar enfoques con tablas de tradeoffs; recomendar si me lo pides.
 - Visualizar con diagramas ASCII cuando aclaren.
 - Sacar a la luz riesgos y desconocidos.

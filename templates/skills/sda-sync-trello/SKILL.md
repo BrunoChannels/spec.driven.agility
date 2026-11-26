@@ -140,12 +140,19 @@ Transiciones sugeridas por el estado real, nunca inventadas:
    Tests: <n> unitarios + <n> integración (según el historial del spec)
    Pendiente manual: <pasos de tasks.md sin marcar, o "ninguno">
    ```
-4. Ejecuta:
+4. Ejecuta el dry-run **sin checklist**:
    ```bash
-   node .opencode/skills/sda-sync-trello/scripts/trello.mjs sync-hu --hu HU<n> --move done --checklist --desc --comment "<texto>" [--link "<PR>"]
+   node .opencode/skills/sda-sync-trello/scripts/trello.mjs sync-hu --hu HU<n> --move done --desc --comment "<texto>" [--link "<PR>"]
    ```
-5. Con mi OK, añade `--apply`.
-6. Pregunta si quiero archivar las tarjetas finalizadas del sprint (`archive-sprint`). Nunca lo hagas
+   En modo cierre **nunca** se pasa `--checklist`: la tarjeta se sincroniza sin checklist. El
+   checklist de `tasks.md` es opt-in y solo se agrega si lo pido explícitamente (modo B).
+5. Marca la tarjeta como completada con `dueComplete=true` — el check de “Marcar como completada”.
+   Moverla a *Finalizado* no alcanza. El script no expone este campo: usa
+   `PUT https://api.trello.com/1/cards/{id}?dueComplete=true&key=<KEY>&token=<TOKEN>` con las
+   credenciales de `~/.sda/credentials.json`, sin imprimir key ni token, y verifica con
+   `GET /1/cards/{id}?fields=name,idList,dueComplete`.
+6. Con mi OK, añade `--apply` al `sync-hu` y confirma que `dueComplete` quedó en `true`.
+7. Pregunta si quiero archivar las tarjetas finalizadas del sprint (`archive-sprint`). Nunca lo hagas
    sin permiso.
 
 ## 7. Modo D — Diagnóstico
@@ -171,7 +178,8 @@ Tras la acción principal, ofrece en una sola pregunta múltiple:
 - **Nunca borres** tarjetas, etiquetas ni listas. Archivar requiere confirmación aparte.
 - **Nunca toques** el `plan.md`, `tasks.md`, `spec.md` ni `design.md` desde este comando: aquí solo se
   lee. Las marcas del backlog las hacen `/sda-build` y `/sda-end`.
-- **Nunca marques** los pasos manuales ni la revisión manual en la checklist de Trello.
+- **Checklist opt-in:** en modo cierre (C) nunca se crea, actualiza ni marca un checklist. Nunca
+  marques los pasos manuales ni la revisión manual en Trello.
 - **Nunca imprimas** la API key ni el token; usa la máscara del script.
 - **Nunca commitees.** Si hace falta sugerir un commit, sugiérelo sin ejecutarlo.
 - Si el script devuelve `0 HUs detectadas`, **no asumas un backlog vacío**: revisa `--sprint` y el

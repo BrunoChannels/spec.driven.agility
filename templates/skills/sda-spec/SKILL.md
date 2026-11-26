@@ -14,8 +14,8 @@ cubren con tests unitarios y de integración.
 
 - La HU del `backlog/<sprint>/Plan.md` (ruta o bloque pegado).
 - El enfoque acordado en `/sda-explore`.
-- La `## Estrategia de tests` del `Plan.md` y la spec viva `specs/<capability>/spec.md` de la
-  capability que toca.
+- La `## Estrategia de tests` del `Plan.md` —runner, estructura, comandos y directorios— y la spec
+  viva `specs/<capability>/spec.md` de la capability que toca.
 
 ## Pasos
 
@@ -32,7 +32,8 @@ cubren con tests unitarios y de integración.
    encoding) y **petición** (contrato del sync/API: payload, ids, idempotencia). Son "sí o sí": no
    se cierra sin tests unitarios o de integración que las cubran.
 5. **Redactar `design.md`** (ver plantilla): cómo entra al código, archivos a tocar, piezas nuevas,
-   decisiones, out of scope.
+   decisiones, out of scope. En `## Archivos a tocar` incluí las rutas de test con el nombre exacto
+   que exige la `estructura` del `Plan.md`.
 6. **Redactar `tasks.md`** (ver plantilla): tareas agrupadas por fase, con los **tests primero**
    (rojo), una pausa de revisión, el código después (verde), los **pasos manuales** que debe ejecutar
    el usuario (env vars, SQL, secretos, infra) y la **revisión manual** final.
@@ -49,6 +50,9 @@ cubren con tests unitarios y de integración.
   cubre con al menos un test unitario o de integración.
 - **Unitarios para lógica pura; integración para lo que cruza módulos**, CLI, base de datos, API o
   filesystem. Elige el nivel según lo que recorra el escenario.
+- **Ubicación de tests.** La `estructura` del `Plan.md` manda: `colocada` = test junto al componente y
+  su CSS; `separada` = directorios de unitarios e integración del plan; `mixta` = UI colocada y
+  backend separado. Reflejá las rutas exactas en `design.md`.
 - **No escribas código.** Solo los tres artefactos.
 - **Esfuerzo en el plan.** No repitas el esfuerzo en `spec.md`/`design.md`/`tasks.md`: la fuente es
   la línea de la HU en `Plan.md`.
@@ -115,6 +119,7 @@ El sistema DEBE <qué hace, desde el punto de vista del usuario>.
 
 ## Archivos a tocar
 - `ruta/relativa` — qué se crea o modifica y por qué.
+- `ruta/del/test` — test que cubre los escenarios, ubicado según la `estructura` del `Plan.md`.
 
 ## Piezas nuevas
 - `nombre` — para qué sirve.
@@ -133,7 +138,7 @@ El sistema DEBE <qué hace, desde el punto de vista del usuario>.
 
 ## 1. Tests (rojo)
 
-- [ ] 1.1 Escribir los tests unitarios e integración a partir de los escenarios de `spec.md` (incluye formato y petición si la HU lo exige).
+- [ ] 1.1 Escribir los tests unitarios e integración a partir de los escenarios de `spec.md` en las rutas que fija la `estructura` del `Plan.md` (incluye formato y petición si la HU lo exige).
 
 - [ ] 1.2 Mostrar el rojo y detenerse para revisión.
 

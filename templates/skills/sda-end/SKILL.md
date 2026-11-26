@@ -1,6 +1,6 @@
 ---
 name: sda-end
-description: Cierra la HU recién implementada en una sola corrida: valida tests unitarios e integración en verde y regresiones, exige tasks.md completo, pide confirmación, sincroniza la spec de la HU en TODAS las raíces de specs vivas (specs/ y espejos como openspec/specs/), marca la HU en el checklist del Plan, agrega historial, archiva la HU en backlog/<sprint>/archive/ y ofrece archivar el sprint. Nunca commitea.
+description: Cierra la HU recién implementada en una sola corrida: valida tests unitarios e integración en verde y regresiones, exige tasks.md completo, pide confirmación, sincroniza la spec de la HU en TODAS las raíces de specs vivas (specs/ y espejos como openspec/specs/), marca la HU en el checklist del Plan, agrega historial, archiva la HU en backlog/<sprint>/archive/, marca la tarjeta de Trello como completada (dueComplete, nunca checklist) y ofrece archivar el sprint. Nunca commitea.
 disable-model-invocation: true
 ---
 
@@ -38,7 +38,8 @@ te detienes.
 
 ## 2. Valida las reglas
 
-**a) Tests nuevos.** Los archivos de tests unitarios y de integración nuevos son lo esperado. Si un
+**a) Tests nuevos.** Los archivos de tests unitarios y de integración nuevos —colocados junto al
+componente o en carpetas separadas, según la `estructura` del `Plan.md`— son lo esperado. Si un
 test preexistente aparece modificado/eliminado sin aprobación explícita, detente. Comprueba que el
 test nuevo no se haya retocado después del verde.
 
@@ -216,9 +217,29 @@ Con las specs sincronizadas y el backlog marcado, mueve la carpeta de la HU. Est
 ## 8. Sincroniza Trello (opcional, solo si está configurado)
 
 Si existe `.opencode/trello.json` en el proyecto **y** la HU quedó validada en el paso 3, ofrece una
-sola vez mover su tarjeta a *Finalizado* con la skill `sda-sync-trello` (o `/sda-sync-trello`):
-comentario de cierre, checklist de `tasks.md` y, si me interesa, el enlace del PR/commit.
+sola vez marcar su tarjeta como completada.
 
+Comportamiento obligatorio (las dos cosas, en este orden):
+
+1. Mueve la tarjeta a la lista *Finalizado*.
+2. Marca la tarjeta como completada con `dueComplete=true` — el check que Trello muestra como
+   **“Marcar como completada”**. Moverla de lista no alcanza: sin `dueComplete=true` la tarjeta
+   sigue apareciendo sin completar.
+3. Opcional, solo si el usuario lo pide: agrega un comentario de cierre con la ruta real de
+   `spec.md` archivada y el resultado de los tests.
+
+Reglas duras:
+
+- **Nunca** crees, sincronices, actualices ni marques checklists de la tarjeta: prohibido usar
+  `--checklist` de `sda-sync-trello`, `PUT /1/cards/{id}/checklist*` o cualquier importación de
+  `tasks.md` a Trello. El checklist vive solo en `tasks.md`; Trello refleja únicamente el estado de
+  la tarjeta.
+- **Nunca** importes pasos manuales ni ítems de `tasks.md` a Trello.
+- Si el script `sda-sync-trello` no expone `dueComplete`, no lo modifiques ni improvises flags:
+  hazlo con la API de Trello
+  (`PUT https://api.trello.com/1/cards/{id}?dueComplete=true&key=<KEY>&token=<TOKEN>`) leyendo las
+  credenciales de `~/.sda/credentials.json`. Nunca imprimas la key ni el token y verificá con
+  `GET /1/cards/{id}?fields=name,idList,due` y `dueComplete` que quedó en `true`.
 - Si no hay configuración de Trello, no lo menciones.
 - Nunca lo hagas sin mi confirmación, y nunca antes de sincronizar las specs y archivar la HU.
 - La HU ya vive en `backlog/<sprint>/archive/HU_NN/`: usá esa ruta en el comentario de cierre y no
@@ -255,7 +276,8 @@ Mensaje breve y claro:
   deben estar en `[x]` para llegar acá; si el usuario los marcó sin ejecutarlos, decí "validada en
   código, pendiente de puesta en marcha".
 - Si archivaste el sprint, di la ruta nueva. Si no, que el plan sigue en `backlog/<sprint>/`.
-- Si sincronizaste Trello, di el enlace de la tarjeta y en qué lista quedó.
+- Si sincronizaste Trello, di el enlace de la tarjeta, en qué lista quedó y que está marcada como
+  completada (`dueComplete=true`), sin checklist.
 - Sugerencia de commit, sin commitear.
 
 **Checklist obligatorio antes de responder** (si alguna casilla queda vacía, no cierres:
@@ -266,7 +288,8 @@ completala o reportá por qué no se pudo):
 - [ ] línea de la HU en `[x]` en `Plan.md`, con estado y esfuerzo recalculados.
 - [ ] historial agregado en `spec.md` sin duplicar.
 - [ ] `HU_NN` movida a `backlog/<sprint>/archive/HU_NN/` y verificada.
-- [ ] pregunta del sprint hecha (si correspondía) y Trello ofrecido (si está configurado).
+- [ ] pregunta del sprint hecha (si correspondía) y, si Trello está configurado, tarjeta movida a
+  *Finalizado* y marcada como completada (`dueComplete=true`), sin checklist.
 
 No cierres con pregunta: las únicas permitidas son la confirmación del paso 4 y la del archivado
 del sprint en el paso 9.

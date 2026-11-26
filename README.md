@@ -1,6 +1,6 @@
 # Spec-Driven Agility (SDA)
 
-> Versión actual: **0.12.0**
+> Versión actual: **0.14.0**
 
 CLI que instala la metodología **Spec-Driven Agility** en cualquier proyecto con [opencode](https://opencode.ai):
 backlog ágil de historias de usuario, artefactos por HU y **tests unitarios y de integración**.
@@ -54,12 +54,53 @@ Re-sincroniza comandos, skills y subagente. No toca `backlog/` ni `specs/`.
 
 | Comando | Qué hace |
 |---|---|
-| `/sda-sprint` | Crea/actualiza el backlog, asigna el esfuerzo por HU y define/hereda la estrategia de tests (guardada en `Plan.md`). |
+| `/sda-sprint` | Crea/actualiza el backlog, asigna el esfuerzo por HU y define/hereda la estrategia de tests (runner, estructura, comandos y directorios; guardada en `Plan.md`). |
 | `/sda-explore` | Indaga código + specs vivas + estrategia de tests y acuerda el enfoque de una HU. |
 | `/sda-spec` | Escribe `spec.md` (escenarios de test), `design.md` y `tasks.md` por fases con pasos y pruebas manuales; ajusta el esfuerzo si el diseño lo cambia. |
-| `/sda-build` | Implementa con TDD: tests unitarios e integración → rojo → revisión → verde. Al cerrar, ofrece un barrido superficial de huecos con un subagente de solo lectura. |
+| `/sda-build` | Implementa con TDD: tests unitarios e integración → rojo → revisión → verde. Actualiza `tasks.md` en el mismo momento en que implementa cada tarea. Documenta siempre cada archivo tocado (tras las importaciones) y cada función creada, y actualiza la documentación obsoleta. Al cerrar, ofrece un barrido superficial de huecos con un subagente de solo lectura. |
 | `/sda-end` | Cierra la HU en una sola corrida: valida, pide confirmación, sincroniza specs vivas, marca la HU sin tocar los pasos ni las pruebas manuales, archiva la HU y ofrece archivar el sprint. |
 | `/sda-sync-trello` | Espeja el backlog en un tablero Kanban de Trello: configura credenciales y tablero, sube las HUs como tarjetas y actualiza o cierra la tarjeta de la HU en curso. |
+
+### Estrategia y estructura de tests
+
+`/sda-sprint` define —o hereda del sprint más reciente— la estrategia en el `## Estrategia de tests`
+del `Plan.md`:
+
+```markdown
+## Estrategia de tests
+- **runner**: Vitest
+- **estructura**: colocada — tests junto al componente, conviviendo con su CSS
+- **unitarios**: comando `npm run test:unit` — directorio `src/`
+- **integración**: comando `npm run test:integration` — directorio `test/integration/`
+```
+
+La **estructura** decide dónde vive cada archivo de test:
+
+| Valor | Ubicación |
+|---|---|
+| `colocada` | Atomic design, carpeta por componente: `Componente/Componente.tsx`, `Componente/Componente.module.css` y `Componente/Componente.test.tsx` conviven. |
+| `separada` | Código en `src/…` y tests en `test/unit/…` y `test/integration/…`. |
+| `mixta` | UI colocada junto al componente y backend/lógica en carpetas separadas. |
+
+`/sda-explore`, `/sda-spec`, `/sda-build` y `/sda-end` leen la estructura del `Plan.md`. Si un plan
+viejo ya tiene la estrategia pero le falta `estructura`, se pregunta solo ese dato y se completa el
+bloque.
+
+### Documentación del código
+
+`/sda-build` documenta siempre, sin preguntar y en la misma pasada del código:
+
+- **Por archivo creado o modificado**: un comentario de archivo **después de las importaciones** que
+  explica de qué trata, qué expone y qué impacto tiene en la aplicación (quién lo usa, qué flujo
+  habilita, qué se rompería si cambia).
+- **Por función creada** (métodos, componentes, hooks, handlers y callbacks con nombre incluidos):
+  **una línea** antes de la firma con qué hace y por qué importa en el proyecto.
+- **Actualización**: si el cambio invalida un comentario, docstring, README o spec de `specs/`, se
+  corrige en la misma pasada. Nunca se agrega un segundo bloque si ya existe documentación: se amplía
+  o se corrige.
+
+Se respeta el estilo de comentarios del repo (`/** ... */`, `"""..."""`, `///`, etc.) y no se inventa
+documentación en formatos que no admiten comentarios (JSON, CSV).
 
 ### Barrido de huecos
 
@@ -93,6 +134,10 @@ Las HU descartadas no suman. Si una historia no entra en 8, se parte.
 `## 2. Implementación (verde)`, `## 3. Validaciones obligatorias` (si aplica),
 `## 4. Pasos manuales` (si aplica) y `## 5. Revisión manual`. Cada tarea usa numeración `N.M` y su
 propio párrafo.
+
+Durante el build es un **registro vivo**: `/sda-build` marca cada tarea de tests, implementación y
+validaciones en el mismo momento en que la termina, sin esperar al cierre de la HU, y relee el
+archivo antes de mostrar verde para corregir marcas faltantes o sobrantes.
 
 Las dos últimas fases son del usuario: los **pasos manuales** son acciones que el agente no puede
 hacer (agregar variables de entorno en un servidor, ejecutar SQL en una base real, configurar
@@ -184,14 +229,16 @@ directamente. En CI o scripts se omite sola; también puedes forzarlo con `sda i
   cerrar una HU, `/sda-end` la sincroniza también en los espejos de specs existentes (p. ej.
   `openspec/specs/`).
 - **Tests unitarios y de integración obligatorios** para proteger la lógica y los flujos entre
-  módulos; exportación/datos exige validar **formato** y **peticiones**.
+  módulos; exportación/datos exige validar **formato** y **peticiones**. Su ubicación la fija la
+  **estructura** del `Plan.md` (colocada, separada o mixta).
 - Cada HU lleva un **esfuerzo Fibonacci de un dígito** (1, 2, 3, 5, 8) y el `Plan.md` mantiene el
   total del sprint, lo implementado y lo pendiente.
 - `tasks.md` se agrupa por **fase** (tests, implementación, validaciones, pasos manuales y revisión
   manual); los pasos y las pruebas manuales los marca el usuario.
 - Cada HU cierra con un **barrido de huecos opcional** (subagente de solo lectura) que busca
   inconsistencias con impacto a largo plazo sin ampliar el alcance ni corregir por su cuenta.
-- Markdown puro, sin CLI de specs. La estrategia de tests se define o hereda en `/sda-sprint` y vive en el `Plan.md`.
+- Markdown puro, sin CLI de specs. La estrategia de tests se define o hereda en `/sda-sprint`
+  (runner, estructura, comandos y directorios) y vive en el `Plan.md`.
 
 ## Desarrollo
 

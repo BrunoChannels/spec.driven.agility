@@ -1,6 +1,6 @@
 ---
 name: sda-sprint
-description: Crea o actualiza el backlog de un sprint como historias de usuario verticales, asigna esfuerzo de un dígito (1, 2, 3, 5, 8) y total del sprint. Define o hereda la estrategia de tests (unitarios e integración) y la guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
+description: Crea o actualiza el backlog de un sprint como historias de usuario verticales, asigna esfuerzo de un dígito (1, 2, 3, 5, 8) y total del sprint. Define o hereda la estrategia de tests (runner, estructura de los tests y directorios de unitarios e integración) y la guarda en el Plan.md. Sin criterios de aceptación ni implementación; eso es /sda-spec.
 disable-model-invocation: true
 ---
 
@@ -17,19 +17,31 @@ cambia conmigo.
 ## 1. Estrategia de tests (obligatoria, con herencia)
 
 Antes de armar el backlog, garantiza que la estrategia de tests esté definida: los tests son el
-contrato de cada HU y no se trabaja sin ellos. Solo se usan tests unitarios y de integración. En caso de estar definida omite este paso; sino, pregúntame y define para plan.md. La estrategia de tests se hereda de sprints previos si existe, o se define en este sprint si no.
+contrato de cada HU y no se trabaja sin ellos. Solo se usan tests unitarios y de integración. La
+estrategia incluye el runner, la **estructura de los tests** (colocada, separada o mixta) y los
+comandos y directorios de cada nivel. En caso de estar definida omite este paso; si no, pregúntame y
+defínela para el `plan.md`. La estrategia de tests se hereda de sprints previos si existe, o se define
+en este sprint si no.
 
 1. **Busca una decisión previa** con un `grep` acotado de `## Estrategia de tests` en los
    `backlog/**/plan.md` (sprints activos y `backlog/archive/`). Lee solo ese bloque; no leas los
    planes enteros.
 2. **Si existe**, hereda la más reciente: escribe ese mismo bloque en el nuevo `plan.md`. No
-   preguntes nada.
+   preguntes nada, **salvo que al bloque le falte `estructura`** (plan viejo): pregunta solo ese dato,
+   complétalo y guarda el bloque completo.
 3. **Si no existe**, pregunta una cosa a la vez, con tu sugerencia:
    1. **Runner de tests** (node:test, Vitest, Jest, pytest…).
-   2. **Comando de unitarios** (ej. `npm run test:unit`).
-   3. **Directorio de unitarios** (ej. `test/unit/`).
-   4. **Comando de integración** (ej. `npm run test:integration`).
-   5. **Directorio de integración** (ej. `test/integration/`).
+   2. **Estructura de los tests** — ¿`colocada` (atomic design: carpeta por componente) o `separada`?
+      Si el proyecto mezcla UI y backend, ¿`mixta`?
+      - `colocada` — carpeta por componente: `Componente/Componente.tsx` +
+        `Componente/Componente.module.css` + `Componente/Componente.test.tsx` conviviendo.
+      - `separada` — código en `src/…` y tests en `test/unit/…` + `test/integration/…`.
+      - `mixta` — UI colocada junto al componente y backend/lógica en carpetas separadas.
+   3. **Comando de unitarios** (ej. `npm run test:unit`).
+   4. **Directorio de unitarios** (ej. `test/unit/`; si la estructura es `colocada`, la raíz donde
+      viven los `*.test.*`, ej. `src/`).
+   5. **Comando de integración** (ej. `npm run test:integration`).
+   6. **Directorio de integración** (ej. `test/integration/`).
    Y escribe el bloque en el nuevo `plan.md`.
 4. Si ya la definí en la conversación, úsala sin repetir la pregunta.
 
@@ -38,6 +50,7 @@ Bloque exacto en el `plan.md` (debajo de `## Contexto`):
 ```markdown
 ## Estrategia de tests
 - **runner**: <nombre>
+- **estructura**: <colocada|separada|mixta> — <detalle: dónde conviven los tests>
 - **unitarios**: comando `<...>` — directorio `<...>`
 - **integración**: comando `<...>` — directorio `<...>`
 ```
@@ -112,6 +125,7 @@ Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 ## Estrategia de tests
 
 - **runner**: <nombre>
+- **estructura**: <colocada|separada|mixta> — <detalle: dónde conviven los tests>
 - **unitarios**: comando `<...>` — directorio `<...>`
 - **integración**: comando `<...>` — directorio `<...>`
 
@@ -143,7 +157,8 @@ Al terminar, ofrece guardar el plan acordado. No lo guardes sin mi OK.
 
 - Al actualizar: marca `[x]` las HU terminadas, y permite reordenar, reformular o descartar
   (tachando con `~~...~~` y su motivo). Reescribe solo lo que cambió; nunca inventes HU. Si el
-  `plan.md` no tiene `## Estrategia de tests`, aplícala (hereda o pregunta) antes de seguir.
+  `plan.md` no tiene `## Estrategia de tests`, aplícala (hereda o pregunta) antes de seguir. Si el
+  bloque existe pero le falta `estructura` (plan viejo), pregunta solo ese dato y agrégalo.
 - **Recalculá el esfuerzo** después de cualquier cambio: la suma de las HU activas es el `Total`;
   `Implementado` es la suma de las HU activas con `[x]`; `Pendiente` es la diferencia. Una HU
   descartada deja de sumar.
